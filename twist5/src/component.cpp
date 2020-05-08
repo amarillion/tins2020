@@ -60,7 +60,7 @@ void Component::handleMessage(std::shared_ptr<Component> src, int msg)
 }
 
 void Component::reprBase(std::ostream &out) const {
-	out << "[" << x << ", " << y << " - " << w << "x" << h << "] ";
+	out << "[" << x << ", " << y << " - " << w << "x" << h << "] " << className() << " ";
 	out << (isVisible() ? "v" : ".")
 		<< (TestFlag(D_DISABLED) ? "." : "e")
 		<< (TestFlag(D_GOTFOCUS) ? "f" : ".");
