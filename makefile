@@ -10,9 +10,15 @@ BUILD=DEBUG
 TWIST_HOME=./twist5
 CXX = g++
 LD = g++
-CFLAGS = -std=c++11 -Iinclude -I$(TWIST_HOME)/include -W -Wall -Wno-unused -DUSE_MOUSE -DUSE_CURL
-LIBS = -lcurl
+CFLAGS = -std=c++11 -Iinclude -I$(TWIST_HOME)/include -W -Wall -Wno-unused -DUSE_MOUSE -DUSE_CURL -DUSE_TEGEL
+LIBS = -lcurl -ltegel5
 NAME = tins2020
+
+# allow specifying location of tegel development library
+ifdef TEGEL_HOME
+	CFLAGS += -I$(TEGEL_HOME)/include
+	LFLAGS += -L$(TEGEL_HOME)/lib
+endif
 
 ifdef WINDOWS
 	PLATFORMSUF = _win

@@ -1,0 +1,19 @@
+<fole1>
+	<roomset name="start">
+		<room map='cross'/>
+		<room map='ldoor'/>
+		<room map='bdoor'/>
+		<room map='rdoor'/>
+		<room map='tdoor'/>
+		<room map='bar1'/>
+		<room map='bar2'/>
+		<room map='tee1'/>
+		<room map='tee2'/>
+		<room map='tee3'/>
+		<room map='tee4'/>
+		<room map='bend1'/>
+		<room map='bend2'/>
+		<room map='bend3'/>
+		<room map='bend4'/>		
+	</roomset>
+</fole1>
