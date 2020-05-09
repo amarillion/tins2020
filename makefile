@@ -115,7 +115,7 @@ TESTBIN = $(BUILDDIR)/test_runner
 SRC_TEST = $(wildcard test/*.cpp)
 OBJ_TEST = $(patsubst %.cpp, $(OBJDIR)/%.o, $(notdir $(SRC_TEST)))
 
-$(TESTBIN): $(OBJ_TEST) $(patsubst %, $(OBJDIR)/%.o, levelGen)
+$(TESTBIN): $(OBJ_TEST) $(patsubst %, $(OBJDIR)/%.o, levelGen util)
 	$(CXX) -o $(TESTBIN) $^ $(LIBS) $(LDFLAGS_TEST) 
 
 .PHONY: test
