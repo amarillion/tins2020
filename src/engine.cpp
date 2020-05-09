@@ -227,7 +227,7 @@ void Engine::handleMessage(ComponentPtr src, int code)
 		setFocus (mKeys[1]);
 		break;
 	case E_QUIT:
-		pushMsg(-1);
+		pushMsg(MSG_CLOSE);
 		break;
 	case MENU_MAIN:
 		setFocus (mMain);
