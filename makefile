@@ -79,7 +79,7 @@ BIN = $(BUILDDIR)/$(NAME)$(BINSUF)
 
 $(shell mkdir -p $(OBJDIR) >/dev/null)
 
-vpath %.cpp $(TWIST_HOME)/src:src
+vpath %.cpp $(TWIST_HOME)/src:src:test
 
 SRC = $(wildcard src/*.cpp) $(wildcard $(TWIST_HOME)/src/*.cpp)
 OBJ = $(patsubst %.cpp, $(OBJDIR)/%.o, $(notdir $(SRC)))
@@ -108,6 +108,20 @@ $(OBJDIR)/%.d: ;
 .PRECIOUS: $(OBJDIR)/%.d
 
 -include $(OBJDIR)/*.d
+
+LDFLAGS_TEST = `pkg-config cppunit --libs`
+TESTBIN = $(BUILDDIR)/test_runner
+
+SRC_TEST = $(wildcard test/*.cpp)
+OBJ_TEST = $(patsubst %.cpp, $(OBJDIR)/%.o, $(notdir $(SRC_TEST)))
+
+$(TESTBIN): $(OBJ_TEST) $(patsubst %, $(OBJDIR)/%.o, levelGen)
+	$(CXX) -o $(TESTBIN) $^ $(LIBS) $(LDFLAGS_TEST) 
+
+.PHONY: test
+test: $(TESTBIN)
+	echo Running test suite ...
+	./$(TESTBIN)
 
 .PHONY: clean
 clean:
