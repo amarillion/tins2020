@@ -24,6 +24,7 @@ map<Dir, DirInfo> DIR = {
 	{ E, { 1,  0, 'E', W } },
 	{ S, { 0,  1, 'S', N } },
 	{ W, { -1, 0, 'W', E } },
+	{ TELEPORT, { 0, 0, 'T', TELEPORT }}
 };
 
 int dx[4] = { 0, 1, 0, -1 };
@@ -37,13 +38,29 @@ bool hasKey(const T &aMap, const U &aKey) {
 	return aMap.find(aKey) != aMap.end();
 }
 
+template<typename T>
+T choice(const std::vector<T> &aContainer) {
+	return aContainer[random(aContainer.size())];
+}
+
+// essential missing functionality
+// see: https://stackoverflow.com/questions/6942273/how-to-get-a-random-element-from-a-c-container
+template<typename T>
+T pop(std::vector<T> &aContainer) {
+	T response = aContainer[aContainer.size()-1];
+	aContainer.pop_back();
+	return response;
+}
+
 struct Node {
 	int area;
 	int x, y;
 	map<Dir, Node*> links;
+	char letter; // for teleporter edges...
 	bool hasLink(Dir dir) {
 		return hasKey(links, dir);
 	}
+	
 };
 
 class Edge {
@@ -104,7 +121,7 @@ string toString(const Map2D<Cell> &map) {
 				row[0] << (node.hasLink(N) ? "  | ": "    ");
 				row[1] << string_format (" %02i.", node.area);
 				row[2] << (node.hasLink(W) ? "-..." : " ...");
-				row[3] << " ...";
+				row[3] << (node.hasLink(TELEPORT) ? string_format(" ..%c", node.letter) : " ...");
 			}
 		}
 		result << row[0].str() << endl << row[1].str() << endl << row[2].str() << endl << row[3].str() << endl;
@@ -132,14 +149,10 @@ void initNodes(Map2D<Cell> &lvl, int num) {
 }
 
 // list all potential edges from a given cell
-vector<Edge> listEdges(Map2D<Cell> &lvl, int x, int y) {
+vector<Edge> listEdges(Map2D<Cell> &lvl, Node *node) {
 	vector<Edge> result;
-	auto &cell = lvl.get(x, y);
-	if (cell.isEmpty()) return result;
-	
-	// only first node is connected normally. Other nodes are tunnels etc...
-	Node &node = cell.nodes[0];
-
+	int x = node->x;
+	int y = node->y;
 	vector<Dir> dirs = { N, E, S, W };
 	for (auto dir : dirs) {
 		int nx = x + dx[dir];
@@ -149,7 +162,7 @@ vector<Edge> listEdges(Map2D<Cell> &lvl, int x, int y) {
 			if (other.isEmpty()) continue;
 			Node &otherNode = other.nodes[0];
 			
-			Edge e = { &node, &otherNode, dir, '1' };
+			Edge e = { node, &otherNode, dir, '1' };
 			result.push_back(e);
 		}
 	}
@@ -179,33 +192,48 @@ void convertArea(Map2D<Cell> &lvl, int srcArea, int destArea) {
 	}
 };
 
+vector<Node*> getAllNodes(Map2D<Cell> &lvl) {
+	vector<Node*> result;
+	for (size_t y = 0; y < lvl.getDimMY(); ++y) {
+		for (size_t x = 0; x < lvl.getDimMY(); ++x) {
+			if (lvl.get(x, y).isEmpty()) continue;
+			result.push_back(&lvl.get(x, y).nodes[0]);
+		}
+	}
+	return result;
+}
+
 void kruskal(Map2D<Cell> &lvl) {
 	vector<Edge> allEdges;
 	
 	int areaCounter = 0;
 
 	// list all possible edges
-	// TODO: Add optional teleportation edges here
-	for (size_t y = 0; y < lvl.getDimMY(); ++y) {
-		for (size_t x = 0; x < lvl.getDimMY(); ++x) {
-			if (lvl.get(x, y).isEmpty()) continue;
-
-			lvl.get(x,y).nodes[0].area = areaCounter++;
-			for (auto &edge : listEdges(lvl, x, y)) {
-				allEdges.push_back(edge);
-			}
+	for (auto n : getAllNodes(lvl)) {
+		n->area = areaCounter++;
+		for (auto &edge : listEdges(lvl, n)) {
+			allEdges.push_back(edge);
 		}
 	}
 
-	
+	vector<Node*> teleporterNodes = getAllNodes(lvl);
+	random_shuffle(teleporterNodes.begin(), teleporterNodes.end());
+	char letter = 'A';
+	while (teleporterNodes.size() >= 2) {
+		Node *from = pop(teleporterNodes);
+		Node *to = pop(teleporterNodes);
+		allEdges.push_back(Edge{ from, to, TELEPORT, letter++});
+	}
+
+	// Kruskal's normally picks the lowest weights in a priority queue,
+	// but for us the order really doesn't matter!
 	random_shuffle(allEdges.begin(), allEdges.end());
 
 	int countAreas = areaCounter;
 	while (allEdges.size() > 0 && countAreas > 1) {
 		// pick a random edge
 		// does it link two areas?
-		Edge e = allEdges[allEdges.size()-1];
-		allEdges.pop_back(); // remove last element
+		Edge e = pop(allEdges);
 
 		if (e.src->area == e.dest->area) {
 			// this is now a candidate for creating a loop
@@ -215,6 +243,10 @@ void kruskal(Map2D<Cell> &lvl) {
 			// create an edge, update areas
 			// until there is only one area
 			linkNodes(e.src, e.dest, e.dir);
+			if (e.dir == TELEPORT) {
+				e.src->letter = e.letter;
+				e.dest->letter = e.letter;
+			}
 			convertArea(lvl, e.dest->area, e.src->area);
 			areaCounter--;
 
