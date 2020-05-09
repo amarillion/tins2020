@@ -6,6 +6,8 @@
 #include "util.h"
 #include <algorithm>    // std::random_shuffle
 #include "strutil.h"
+#include <math.h>
+#include <set>
 
 using namespace std;
 
@@ -166,8 +168,12 @@ void initNodes(Map2D<Cell> &lvl, int num) {
 	for (int i = 0; i < num; ++i) {
 		while (!lvl.get(x, y).isEmpty()) {
 			int dir = random(4);
-			x += dx[dir];
-			y += dy[dir];
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (lvl.inBounds(nx, ny)) {
+				x = nx;
+				y = ny;
+			}
 		}
 		lvl.get(x, y).addNode();
 	}
@@ -221,52 +227,90 @@ vector<Node*> getDoorAreaNodes(Map2D<Cell> &lvl, int area) {
 	return result;
 }
 
-const int NUM_BANANAS = 3;
+// distribute a given item in a round-robin fashion, so that each area gets some.
+void roundRobinDistribute(const vector<Node*> &allNodes, int max, void set(Node*), bool get(Node*), const vector<int> &areas) {
 
-void placeObjects(Map2D<Cell> &lvl, int area1, int area2) {
-	auto allNodes = getAllNodes(lvl);
+	// distribute items in a round-robin fashion, starting in the smallest
+	size_t pos = 0;
+	size_t areaPos = 1;
+	int remain = max;
+	size_t it = 0;
 
-	auto area1Nodes = getDoorAreaNodes(lvl, area1);
-	auto area2Nodes = getDoorAreaNodes(lvl, area2);
-
-	if (area1Nodes.size() < area2Nodes.size()) {
-		auto temp = area1Nodes;
-		area1Nodes = area2Nodes;
-		area2Nodes = temp;
-	}
-
-	random_shuffle(area1Nodes.begin(), area1Nodes.end());
-	random_shuffle(area2Nodes.begin(), area2Nodes.end());
-	random_shuffle(allNodes.begin(), allNodes.end());
-	
-	// area1 is the largest area.
-	// put the players in there.
-	auto n1 = pop(area1Nodes);
-	n1->pStart = 1;
-	auto n2 = pop(area1Nodes);
-	n2->pStart = 2;
-
-	// put the key in area1
-	auto n3 = pop(area1Nodes);
-	n3->hasKeycard = true;
-	
-	int bananaRemain = NUM_BANANAS;
-	// put at least one banana behind the door
-	auto n4 = pop(area2Nodes);
-	n4->hasBanana = true;
-	bananaRemain--;
-
-	while (bananaRemain > 0) {
-		auto b = pop(allNodes);
-		if (!b->hasBanana) {
-			b->hasBanana = true;
-			bananaRemain--;
+	while (remain > 0) {
+		int currentArea = areas[areaPos];
+		
+		Node *n = allNodes[pos];
+		// scan for a node of the right area, without bananas
+		if (n->doorArea == currentArea && !get(n)) {
+			set(n);
+			remain--;
+			// round robin on the areas
+			areaPos = (areaPos + 1) % areas.size();
+			it = 0;
+		}
+		
+		// round robin on the nodes
+		pos = (pos + 1) % allNodes.size();
+		it++;
+		if (it > allNodes.size()) {
+			// we've wrapped around without finding any place
+			// go to the next area and try again
+			areaPos = (areaPos + 1) % areas.size();
+			it = 0;
 		}
 	}
 
-	// start over
-	allNodes = getAllNodes(lvl);
-	
+}
+
+void placeObjects(Map2D<Cell> &lvl, int maxBananas) {
+
+	multiset<int> doorAreaCounts;
+	// multimap<int, Node*> doorAreaNodes;
+
+	auto allNodes = getAllNodes(lvl);
+	for (Node *n : allNodes) {
+		doorAreaCounts.insert(n->doorArea);
+		// doorAreaNodes.insert(std::pair<int, Node*>(n->doorArea, n));
+	}
+
+	std::set<int> doorAreaSet(doorAreaCounts.begin(), doorAreaCounts.end());
+	std::vector<int> areasOrderedByFrq(doorAreaSet.begin(), doorAreaSet.end());
+	std::sort(areasOrderedByFrq.begin(), areasOrderedByFrq.end(), 
+		[&](const int &i1, const int &i2) {
+			return doorAreaCounts.count(i1) > doorAreaCounts.count(i2);
+		}
+	);
+
+	for(auto i : areasOrderedByFrq) {
+		std::cout << "Area #" << i << " count: " << doorAreaCounts.count(i) << endl;
+	}
+
+	// put players in the largest area
+	auto largestAreaNodes = getDoorAreaNodes(lvl, areasOrderedByFrq[0]);
+	random_shuffle(largestAreaNodes.begin(), largestAreaNodes.end());
+	largestAreaNodes[0]->pStart = 1;
+	largestAreaNodes[1]->pStart = 2;
+
+	random_shuffle(allNodes.begin(), allNodes.end());
+	roundRobinDistribute(
+		allNodes,
+		maxBananas,
+		[](Node* n) { n->hasBanana = true; },
+		[](Node* n) { return n->hasBanana; },
+		areasOrderedByFrq
+	);
+
+	random_shuffle(allNodes.begin(), allNodes.end());
+	int maxKeys = areasOrderedByFrq.size(); // put one key in each area
+	roundRobinDistribute(
+		allNodes,
+		maxKeys,
+		[](Node* n) { n->hasKeycard = true; },
+		[](Node* n) { return n->hasKeycard; },
+		areasOrderedByFrq
+	);
+
+
 }
 
 void linkNodes(Node *src, Node *dest, Dir dir, bool reverse = true, bool doorLink = false) {
@@ -282,24 +326,31 @@ void linkNodes(Node *src, Node *dest, Dir dir, bool reverse = true, bool doorLin
 	}
 }
 
-void convertArea(Map2D<Cell> &lvl, int srcArea, int destArea, bool convertDoors=true) {
+void convertArea(Map2D<Cell> &lvl, Node *src, Node *dest, bool convertDoors=true) {
+	int srcArea = src->area;
+	int srcDoorArea = src->doorArea;
+
 	for (size_t y = 0; y < lvl.getDimMY(); ++y) {
 		for (size_t x = 0; x < lvl.getDimMY(); ++x) {
 			if (lvl.get(x, y).isEmpty()) continue;
 			auto &node = lvl.get(x, y).nodes[0];
 			if (node.area == srcArea) {
-				node.area = destArea;
-				if (convertDoors) {
-					node.doorArea = destArea;
-				}
+				node.area = dest->area;
+				// if (convertDoors) {
+				// 	node.doorArea = dest->doorArea;
+				// }
+			}
+			if (convertDoors && node.doorArea == srcDoorArea) {
+				node.doorArea = dest->doorArea;
 			}
 		}
 	}
 };
 
-void kruskal(Map2D<Cell> &lvl) {
+void kruskal(Map2D<Cell> &lvl, int maxDoors) {
 	vector<Edge> allEdges;
 	
+	int doorRemain = maxDoors;
 	int areaCounter = 0;
 
 	// list all possible edges
@@ -343,15 +394,16 @@ void kruskal(Map2D<Cell> &lvl) {
 			// create an edge, update areas
 			// until there is only one area
 			
-			if (areaCounter == 2 && e.dir != TELEPORT) {
+			bool lockDoor = (doorRemain > 0 && e.dir != TELEPORT && random(100) > 50);
+			if (lockDoor) {
 				linkNodes(e.src, e.dest, e.dir, true, true);
-				convertArea(lvl, e.dest->area, e.src->area, false);
-
-				placeObjects(lvl, e.src->doorArea, e.dest->doorArea);
+				convertArea(lvl, e.dest, e.src, false);
+				// placeObjects(lvl, e.src->doorArea, e.dest->doorArea);
+				doorRemain--;
 			}
 			else {
 				linkNodes(e.src, e.dest, e.dir);
-				convertArea(lvl, e.dest->area, e.src->area);
+				convertArea(lvl, e.dest, e.src);
 			}
 			if (e.dir == TELEPORT) {
 				e.src->letter = e.letter;
@@ -376,14 +428,21 @@ void initCells(Map2D<Cell> &lvl) {
 }
 
 void createLevel() {
+	
+	int roomNum = 10;
+	int mapSize = sqrt(roomNum * 3);
+	int maxDoors = roomNum / 5;
+	int bananas = roomNum / 3;
 
-	auto level = Map2D<Cell>(8, 8);
+	auto level = Map2D<Cell>(mapSize, mapSize);
 	initCells(level);
 	
 	// initialize a bunch of adjacent nodes
-	initNodes(level, 10);
+	initNodes(level, roomNum);
 
-	kruskal(level);
+	kruskal(level, maxDoors);
+
+	placeObjects(level, bananas);
 
 	cout << endl << toString(level) << endl;
 }
