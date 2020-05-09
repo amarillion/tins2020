@@ -8,11 +8,9 @@
 #include "strutil.h"
 #include <math.h>
 #include <set>
+#include "level.h"
 
 using namespace std;
-
-enum Dir { N, E, S, W, TELEPORT };
-// map<Dir, int> DX = { { N, 0 }, { E, 1 }, { S, 0 },  { W, -1 } };
 
 struct DirInfo {
 	int dx;
@@ -28,10 +26,6 @@ map<Dir, DirInfo> DIR = {
 	{ W, { -1, 0, 'W', E } },
 	{ TELEPORT, { 0, 0, 'T', TELEPORT }}
 };
-
-int dx[4] = { 0, 1, 0, -1 };
-int dy[4] = { -1, 0, 1, 0 };
-
 
 /** short cut to check if a key exists in a given map */
 //TODO: move to utility class
@@ -54,25 +48,6 @@ T pop(std::vector<T> &aContainer) {
 	return response;
 }
 
-struct Node {
-	int area;
-	int doorArea;
-	int x, y;
-	map<Dir, Node*> links;
-	map<Dir, bool> locks;
-
-	char letter; // for teleporter edges...
-	bool hasLink(Dir dir) {
-		return hasKey(links, dir);
-	}
-	bool hasLock(Dir dir) {
-		return hasKey(locks, dir);
-	}
-	int pStart = 0;
-	bool hasBanana = false;
-	bool hasKeycard = false;
-};
-
 class Edge {
 public:
 	Node *src;
@@ -88,30 +63,13 @@ public:
 	}
 };
 
-class Cell {
-public:
-	int x;
-	int y;
-	vector<Node> nodes;
-	int roomType;
-	int objects;
-
-	bool isEmpty() const {
-		return nodes.empty();
-	}
-
-	void addNode() {
-		Node n;
-		n.x = x;
-		n.y = y;
-		nodes.push_back(n);
-	}
-
-	void getEdges() {
-		vector<Edge> result;
-	}
-};
-
+bool Node::hasLink(Dir dir) {
+	return hasKey(links, dir);
+}
+bool Node::hasLock(Dir dir) {
+	return hasKey(locks, dir);
+}
+	
 string toString(const Map2D<Cell> &map) {
 	stringstream result;
 	
@@ -165,11 +123,13 @@ void initNodes(Map2D<Cell> &lvl, int num) {
 	int y = lvl.getDimMX() / 2;
 
 	// random walk
+	vector<Dir> dirs = { N, E, S, W };
+	
 	for (int i = 0; i < num; ++i) {
 		while (!lvl.get(x, y).isEmpty()) {
-			int dir = random(4);
-			int nx = x + dx[dir];
-			int ny = y + dy[dir];
+			Dir dir = choice(dirs);
+			int nx = x + DIR[dir].dx;
+			int ny = y + DIR[dir].dy;
 			if (lvl.inBounds(nx, ny)) {
 				x = nx;
 				y = ny;
@@ -186,8 +146,8 @@ vector<Edge> listEdges(Map2D<Cell> &lvl, Node *node) {
 	int y = node->y;
 	vector<Dir> dirs = { N, E, S, W };
 	for (auto dir : dirs) {
-		int nx = x + dx[dir];
-		int ny = y + dy[dir];
+		int nx = x + DIR[dir].dx;
+		int ny = y + DIR[dir].dy;
 		if (lvl.inBounds(nx, ny)) {
 			auto &other = lvl.get(nx, ny);
 			if (other.isEmpty()) continue;
@@ -412,7 +372,10 @@ void kruskal(Map2D<Cell> &lvl, int maxDoors) {
 			areaCounter--;
 
 			// print intermediate step for debugging
-			cout << endl << toString(lvl) << endl;
+			// cout << endl << toString(lvl) << endl;
+			// cout << endl << endl;
+			// char readline;
+			// cin >> readline;
 		}
 	}
 }
@@ -427,9 +390,8 @@ void initCells(Map2D<Cell> &lvl) {
 	}
 }
 
-void createLevel() {
+Map2D<Cell> createKruskalMaze(int roomNum) {
 	
-	int roomNum = 10;
 	int mapSize = sqrt(roomNum * 3);
 	int maxDoors = roomNum / 5;
 	int bananas = roomNum / 3;
@@ -445,4 +407,6 @@ void createLevel() {
 	placeObjects(level, bananas);
 
 	cout << endl << toString(level) << endl;
+
+	return level;
 }

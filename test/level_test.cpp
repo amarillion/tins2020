@@ -19,7 +19,7 @@ public:
 
 	void testGenerateLevel() {
 
-		createLevel();
+		createKruskalMaze(10);
 		CPPUNIT_ASSERT (1+1 == 2);
 	}
 };

@@ -67,8 +67,8 @@ class Room
 		TEG_MAP *map;
 		int getStartX (int pi); // get start location of player pi
 		int getStartY (int pi);
-		void linkDoor (Room *otherRoom, int dir);
-		void linkTeleport (Room *otherRoom);
+		void linkDoor (Room *otherRoom, int dir, bool reverse = true);
+		void linkTeleport (Room *otherRoom, bool reverse = true);
 		int getBananaCount();
 };
 
@@ -84,5 +84,6 @@ class Level
 
 Level *createTestLevel(RoomSet *roomSet, Resources *resources, Objects *objects, int monsterHp);
 Level *createLevel(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp);
+Level* createLevel2(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp);
 
 #endif

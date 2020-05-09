@@ -157,7 +157,7 @@ void Game::initGame ()
 void Game::initLevel()
 {
 	// initialize objects
-	level = createLevel(roomSet, &objects, currentLevel + (settings->numPlayers == 1 ? 4 : 6), monsterHp);
+	level = createLevel2(roomSet, &objects, currentLevel + (settings->numPlayers == 1 ? 4 : 6), monsterHp);
 
 	Room *startRoom = level->getStartRoom();
 

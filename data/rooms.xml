@@ -14,6 +14,7 @@
 		<room map='bend1'/>
 		<room map='bend2'/>
 		<room map='bend3'/>
-		<room map='bend4'/>		
+		<room map='bend4'/>
+		<room map='enclosed'/>
 	</roomset>
 </fole1>

@@ -7,6 +7,9 @@
 #include "player.h"
 #include "util.h"
 #include "tilemap.h"
+#include "strutil.h"
+
+#include "levelGen.h"
 
 using namespace std;
 using namespace xdom;
@@ -305,7 +308,7 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 
 RoomInfo *RoomSet::findRoom (bool up, bool down, bool left, bool right, bool teleport)
 {
-	RoomInfo *result = NULL;
+	RoomInfo *result = nullptr;
 	vector <RoomInfo>::iterator i;
 	for (i = rooms.begin(); i != rooms.end(); ++i)
 	{
@@ -315,11 +318,17 @@ RoomInfo *RoomSet::findRoom (bool up, bool down, bool left, bool right, bool tel
 			break;
 		}	
 	}
+	if (!result) {
+		cerr << string_format("Couldn't find room with %i %i %i %i %i\n", up, down, left, right, teleport);
+		assert(false);
+	}
+	
 	return result;
 }
 
 Room::Room (Objects *o, RoomInfo *ri, int monsterHp) : roomInfo(ri), objects (o), map (NULL)
 {
+	assert(ri);
 	doors[0] = NULL;
 	doors[1] = NULL;
 	doors[2] = NULL;
@@ -370,22 +379,22 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp) : roomInfo(ri), objects (o)
 	}
 }
 
-void Room::linkDoor (Room *otherRoom, int dir)
+void Room::linkDoor (Room *otherRoom, int dir, bool reverse)
 {
 	const int opposite[4] = {1, 0, 3, 2};
 	int odir = opposite[dir];
 	assert (doors[dir]);
 	assert (otherRoom);
 	assert (otherRoom->doors[odir]);
-	doors[dir]->link(otherRoom->doors[odir]);
+	doors[dir]->link(otherRoom->doors[odir], reverse);
 }
 
-void Room::linkTeleport (Room *otherRoom)
+void Room::linkTeleport (Room *otherRoom, bool reverse)
 {
 	assert (teleport);
 	assert (otherRoom);
 	assert (otherRoom->teleport);
-	teleport->link(otherRoom->teleport);	
+	teleport->link(otherRoom->teleport, reverse);
 }
 
 Level::~Level()
@@ -412,4 +421,41 @@ int Room::getBananaCount()
 {
 	assert (roomInfo);
 	return roomInfo->bananas;
+}
+
+Level* createLevel2(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp) {
+	// each node becomes a room
+
+	Map2D<Cell> grid = createKruskalMaze(10);
+	auto nodes = getAllNodes(grid);
+
+	Level *level = new Level();
+	map<Node*, Room*> node2room;
+
+	for (auto n : nodes) {
+		Room *r = new Room(objects, roomSet->findRoom(
+			n->hasLink(N), n->hasLink(S), n->hasLink(W), n->hasLink(E), n->hasLink(TELEPORT)), monsterHp);
+		level->rooms.push_back(r);
+		node2room[n] = r;
+	}
+
+	for (auto n : nodes) {
+		Room *src = node2room[n];
+		for (auto pair : n->links) {
+			Dir dir = pair.first;
+			Room* dest = node2room[pair.second];
+			assert(src);
+			assert(dest);
+
+			switch(dir) {
+				case N: src->linkDoor(dest, 0, false); break;
+				case S: src->linkDoor(dest, 1, false); break;
+				case W: src->linkDoor(dest, 2, false); break;
+				case E: src->linkDoor(dest, 3, false); break;
+				case TELEPORT: src->linkTeleport(dest, false); break;
+			}
+		}
+	}
+
+	return level;
 }

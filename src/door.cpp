@@ -15,15 +15,18 @@ void Door::init(Resources *res)
 	sprite = res->getAnim("door");
 }
 
-void Door::link(Door *door)
+void Door::link(Door *door, bool reverse)
 {
 	assert (door);
 	otherDoor = door;
 	otherRoom = door->getRoom();
-	assert (door->otherDoor == NULL); // we don't want to overwrite old links
-	assert (door->otherRoom == NULL); 
-	door->otherDoor = this;
-	door->otherRoom = getRoom();
+
+	if (reverse) {
+		assert (door->otherDoor == NULL); // we don't want to overwrite old links
+		assert (door->otherRoom == NULL); 
+		door->otherDoor = this;
+		door->otherRoom = getRoom();
+	}
 }
 
 Anim *Teleport::sprite;
@@ -40,13 +43,15 @@ void Teleport::init(Resources *res)
 	sprite = res->getAnim("teleport");
 }
 
-void Teleport::link(Teleport *teleport)
+void Teleport::link(Teleport *teleport, bool reverse)
 {
 	assert (teleport);
 	otherTeleport = teleport;
 	otherRoom = teleport->getRoom();
-	assert (teleport->otherTeleport == NULL); // we don't want to overwrite old links
-	assert (teleport->otherRoom == NULL);
-	teleport->otherTeleport = this;
-	teleport->otherRoom = getRoom();
+	if (reverse) {
+		assert (teleport->otherTeleport == NULL); // we don't want to overwrite old links
+		assert (teleport->otherRoom == NULL);
+		teleport->otherTeleport = this;
+		teleport->otherRoom = getRoom();
+	}
 }
