@@ -6,6 +6,7 @@
 #include "monster.h"
 #include "player.h"
 #include "util.h"
+#include "tilemap.h"
 
 using namespace std;
 using namespace xdom;
@@ -215,8 +216,8 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 		RoomInfo ri;
 		RoomInfo ri_tele;
 		/* create two rooms, one with and one without teleporter */
-		ri.map = res->getMap(h->attributes["map"]);
-		ri_tele.map = res->getMap(h->attributes["map"]);
+		ri.map = res->getJsonMap(h->attributes["map"])->map;
+		ri_tele.map = res->getJsonMap(h->attributes["map"])->map;
 
 		for (int x = 0; x < ri.map->w; ++x)
 			for (int y = 0; y < ri.map->h; ++y)

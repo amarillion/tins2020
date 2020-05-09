@@ -16,6 +16,8 @@
 #include "mainloop.h"
 #include "text.h"
 #include "DrawStrategy.h"
+#include "strutil.h"
+#include "tilemap.h"
 
 using namespace std;
 
@@ -60,12 +62,30 @@ int Engine::init()
 		resources.addFiles("data/*.ttf") &&
 		resources.addFiles("data/*.tll") &&
 		resources.addFiles("data/*.wav") &&
-		resources.addFiles("data/*.tga") &&
-		resources.addMapFiles ("data/*.map", "tiles1")
+		resources.addFiles("data/*.tga")
 		))
 	{
 		allegro_message ("Could not load all resources with error %s!", resources.getErrorMsg());
 		return 1;
+	}
+
+	vector<string> levels = {
+		"bar1", "bar2", "bdoor", "bend1", "bend2", "bend3", "bend4", 
+		"cross", "enclosed", "ldoor", "rdoor", "tdoor", "tee1", "tee2", "tee3", "tee4"
+	};
+
+	//TODO: store tileset reference in map itself.
+	for (auto key : levels) {
+
+		auto filename = string_format("data/%s-tiled.json", key.c_str());
+		int result = resources.addJsonMapFile(key, filename, "tiles1");
+		if (!result)
+		{
+			allegro_message ("Could not load all resources!\n%s", resources.getErrorMsg());
+			return 0;
+		}
+		auto amap = resources.getJsonMap(key);
+		assert (amap->map->tilelist);
 	}
 
 	ObjectBase::init (&debug, MainLoop::getMainLoop());
