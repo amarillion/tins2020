@@ -111,21 +111,28 @@ string toString(const Map2D<Cell> &map) {
 		for (size_t x = 0; x < map.getDimMX(); ++x) {
 			auto cell = map.get(x, y);
 			if (cell.isEmpty()) {
-				row[0] << "    ";
-				row[1] << "    ";
-				row[2] << "    ";
-				row[3] << "    ";
+				row[0] << "▒▒▒▒";
+				row[1] << "▒▒▒▒";
+				row[2] << "▒▒▒▒";
+				row[3] << "▒▒▒▒";
 			}
 			else {
 				auto &node = cell.nodes[0];
-				row[0] << (node.hasLink(N) ? "  | ": "    ");
-				row[1] << string_format (" %02i.", node.area);
-				row[2] << (node.hasLink(W) ? "-..." : " ...");
-				row[3] << (node.hasLink(TELEPORT) ? string_format(" ..%c", node.letter) : " ...");
+				row[0] << (node.hasLink(N) ? "▒▒ ▒": "▒▒▒▒");
+				// row[1] << string_format ("▒%02i ", node.area);
+				row[1] << "▒   ";
+				row[2] << (node.hasLink(W) ? "    " : "▒   ");
+				row[3] << (string_format("▒  %c", node.hasLink(TELEPORT) ? node.letter : ' '));
 			}
 		}
-		result << row[0].str() << endl << row[1].str() << endl << row[2].str() << endl << row[3].str() << endl;
+		result << row[0].str() << "▒\n" << row[1].str() << "▒\n" << row[2].str() << "▒\n" << row[3].str() << "▒\n";
 	}
+
+	for (size_t x = 0; x < map.getDimMX(); ++x) {
+		result << "▒▒▒▒";
+	}
+	result << "▒\n";
+
 	return result.str();
 }
 
