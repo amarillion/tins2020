@@ -1,38 +1,38 @@
 <twist>
-	<anim id='fole_walk' dx='20' dy='16'>
+	<anim id='fole_walk' rle='FoleFront1' dx='20' dy='16' regionw='40' regionh='40' originy='40' >
 		<dir id="up">
-			<frame rle='folebazuca4' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='folebazuca2' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='160' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='200' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 		<dir id="down">
-			<frame rle='folebazuca3' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='folebazuca1' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='80' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='120' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 		<dir id="left">
-			<frame rle='foleside1' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='foleside2' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='0' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='40' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 		<dir id="right">
-			<frame rle='foleside3' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='foleside4' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='0' time='200' hotx='-8' hoty='-20'><flip/></frame>
+			<frame originx='40' time='200' hotx='-8' hoty='-20'><flip/></frame>
 		</dir>
 	</anim>
-	<anim id='raul_walk' dx='20' dy='16'>
+	<anim id='raul_walk' rle='FoleFront1' dx='20' dy='16' regionw='40' regionh='40' originy='0' >
 		<dir id="up">
-			<frame rle='raulback1' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='raulback2' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='160' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='200' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 		<dir id="down">
-			<frame rle='raulfront1' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='raulfront2' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='80' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='120' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 		<dir id="left">
-			<frame rle='raulside1' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='raulside2' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='0' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='40' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 		<dir id="right">
-			<frame rle='raulside3' time='200'  hotx='-8' hoty='-20'/>
-			<frame rle='raulside4' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='0' time='200'  hotx='-8' hoty='-20'><flip/></frame>
+			<frame originx='40' time='200'  hotx='-8' hoty='-20'><flip/></frame>
 		</dir>
 	</anim>
 	<anim id='teleport' rle='teleport' dx='12' dy='30' regionw='32' regionh='32'>
@@ -40,19 +40,8 @@
 		<frame originx='32' time='200' hotx='-8' hoty='-10'/>
 		<frame originx='64' time='200' hotx='-8' hoty='-10'/>
 	</anim>
-	<anim id='bullet' dx='16' dy='16' >
-		<dir id="up">
-			<frame rle='bullet2' time='0' hotx='-12' hoty='-12'/>
-		</dir>
-		<dir id="down">
-			<frame rle='bullet1' time='0' hotx='-12' hoty='-12'/>
-		</dir>
-		<dir id="left">
-			<frame rle='bullet4' time='0' hotx='-12' hoty='-12'/>
-		</dir>
-		<dir id="right">
-			<frame rle='bullet3' time='0' hotx='-12' hoty='-12'/>
-		</dir>
+	<anim id='bullet' rle='bullets' dx='16' dy='16' regionw='40' regionh='40'>
+		<frame originx='40' time='0' hotx='-12' hoty='-12'/>
 	</anim>
 	<anim id='monster1' dx='28' dy='28'>
 		<state>
