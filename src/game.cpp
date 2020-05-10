@@ -276,5 +276,5 @@ Player *Game::getNearestPlayer (Object *o)
 void Game::init (Resources *resources)
 {
 	roomSet = RoomSet::loadFromFile("data/rooms.xml", resources);
-	gamefont = resources->getFont("fixed_font");
+	gamefont = resources->getFont("builtin_font");
 }

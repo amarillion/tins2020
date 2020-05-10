@@ -62,7 +62,6 @@ int Engine::init()
 		resources.addFiles("data/*.ttf") &&
 		resources.addFiles("data/*.tll") &&
 		resources.addFiles("data/*.wav") &&
-		resources.addFiles("data/*.tga") &&
 		resources.addStream("Flower_field", "data/music/Flower_field.ogg")
 		))
 	{
@@ -98,7 +97,7 @@ int Engine::init()
 	PickUp::init(&resources);
 
 	game->init(&resources);
-	gamefont = resources.getFont("fixed_font");
+	gamefont = resources.getFont("builtin_font");
 
  	srand(time(0));
 
@@ -232,7 +231,7 @@ void Engine::initMenu()
 
 	//TODO: used to be font "Metro"
 	//menufont = resources->getAlfont("Vera", 24);
-	sfont = resources.getFont("Vera_24");
+	sfont = resources.getFont("SpicyRice-Regular_24");
 
 	miSound = make_shared<ToggleMenuItem>(MENU_SOUND, "Sound is on", "Sound is off", "press enter to turn sound on or off");
 	miSound->setToggle(MainLoop::getMainLoop()->isSoundOn());
