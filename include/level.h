@@ -14,6 +14,27 @@ class Objects;
 class Door;
 class Teleport;
 
+enum RoomFlags {
+	INIT_KEY = 0x01, 
+	INIT_BONUS = 0x02, 
+	INIT_BANANA = 0x04,
+
+	INIT_P1_START = 0x10,
+	INIT_P2_START = 0x20,
+	
+	INIT_DOOR_N = 0x100,
+	INIT_DOOR_E = 0x200,
+	INIT_DOOR_S = 0x400,
+	INIT_DOOR_W = 0x800,
+
+	INIT_LOCK_N = 0x1000,
+	INIT_LOCK_E = 0x2000,
+	INIT_LOCK_S = 0x4000,
+	INIT_LOCK_W = 0x8000,
+
+	INIT_TELEPORTER = 0x10000
+};
+
 class ObjectInfo
 {
 	public:
@@ -34,6 +55,7 @@ class RoomInfo
 			up(false), down(false), left(false), right(false), 
 			teleport(false), bananas(0), playerStart(false) {}
 		std::vector <ObjectInfo> objectInfo;
+		std::string name;
 		TEG_MAP *map;
 		bool up;
 		bool down;
@@ -62,14 +84,17 @@ class Room
 		
 		Door *doors[4]; // list of Doors in this room
  		Teleport *teleport;
+
+		int initFlags; // room initialization flags...
+		int bananaCount; 
 	public:		
-		Room(Objects *o, RoomInfo *ri, int monsterHp);
+		Room(Objects *o, RoomInfo *ri, int monsterHp, int initFlags = -1);
 		TEG_MAP *map;
 		int getStartX (int pi); // get start location of player pi
 		int getStartY (int pi);
 		void linkDoor (Room *otherRoom, int dir, bool reverse = true);
 		void linkTeleport (Room *otherRoom, bool reverse = true);
-		int getBananaCount();
+		int getBananaCount() { return bananaCount; }
 };
 
 class Level

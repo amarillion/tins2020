@@ -94,7 +94,7 @@ int Engine::init()
 	Bullet::init(&resources);
 	Door::init(&resources);
 	Monster::init(&resources);
-	Banana::init(&resources);
+	PickUp::init(&resources);
 	Teleport::init(&resources);
 
 	game->init(&resources);

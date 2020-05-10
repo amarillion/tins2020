@@ -217,10 +217,11 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 	{
 		assert (h->name == "room");
 		RoomInfo ri;
-		RoomInfo ri_tele;
 		/* create two rooms, one with and one without teleporter */
 		ri.map = res->getJsonMap(h->attributes["map"])->map;
-		ri_tele.map = res->getJsonMap(h->attributes["map"])->map;
+		
+		ri.name = h->attributes["map"];
+		cout << ri.name << endl;
 
 		for (int x = 0; x < ri.map->w; ++x)
 			for (int y = 0; y < ri.map->h; ++y)
@@ -239,69 +240,72 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 					case 100:
 						oi.type = ObjectInfo::DOOR;
 						oi.doorDir = 0;
-						ri.up = true; ri_tele.up = true;
+						ri.up = true;
 						break;
 					case 101:
 						oi.type = ObjectInfo::DOOR;
 						oi.doorDir = 3;
-						ri.right = true; ri_tele.right = true;
+						ri.right = true;
 						break;
 					case 102:
 						oi.type = ObjectInfo::DOOR;
 						oi.doorDir = 1;
-						ri.down = true; ri_tele.down = true;
+						ri.down = true;
 						break;
 					case 103:
 						oi.type = ObjectInfo::DOOR;
 						oi.doorDir = 2;
-						ri.left = true; ri_tele.left = true;
+						ri.left = true;
 						break;
 					case 104:
-						oi.type = ObjectInfo::MONSTER;
-						oi.monsterType = 0;
+						oi.type = ObjectInfo::BANANA;
+						ri.bananas++;
 						break;
 					case 105:
 						oi.type = ObjectInfo::MONSTER;
-						oi.monsterType = 1;
+						oi.monsterType = 0;
 						break;
 					case 106:
 						oi.type = ObjectInfo::MONSTER;
-						oi.monsterType = 2;
+						oi.monsterType = 1;
 						break;
 					case 107:
 						oi.type = ObjectInfo::MONSTER;
-						oi.monsterType = 3;
+						oi.monsterType = 2;
 						break;
 					case 108:
-						oi.type = ObjectInfo::BANANA;
-						ri.bananas++;
-						ri_tele.bananas++;
+						oi.type = ObjectInfo::MONSTER;
+						oi.monsterType = 3;
 						break;
 					case 109:
 						oi.type = ObjectInfo::TELEPORT;
-						ri_tele.teleport = true; /** add teleporter only to tele */
 						break;
 					case 110:
 						oi.type = ObjectInfo::PLAYER;
 						oi.pi = 0;
-						ri.playerStart = true; ri_tele.playerStart = true;
+						ri.playerStart = true;
 						break;
 					case 111:
 						oi.type = ObjectInfo::PLAYER;
 						oi.pi = 1;
-						ri.playerStart = true; ri_tele.playerStart = true;
+						ri.playerStart = true;
 						break;
 					default:
 						assert (false); // wrong type
 						break;
 					}
 					ri.objectInfo.push_back(oi);
-					ri_tele.objectInfo.push_back(oi);
 				}
 
 		}
+		
+		// each room should have exactly three placeholders for bananas
+		if (ri.bananas < 3) {
+			cerr << string_format("Missing placeholders in %s\n", h->attributes["map"].c_str());
+			assert(false);
+		}
+		
 		result->rooms.push_back (ri);
-		result->rooms.push_back (ri_tele);
 	}
 	return result;
 }
@@ -312,7 +316,7 @@ RoomInfo *RoomSet::findRoom (bool up, bool down, bool left, bool right, bool tel
 	vector <RoomInfo>::iterator i;
 	for (i = rooms.begin(); i != rooms.end(); ++i)
 	{
-		if (i->up == up && i->down == down && i->left == left && i->right == right && i->teleport == teleport)
+		if (i->up == up && i->down == down && i->left == left && i->right == right /* && i->teleport == teleport */)
 		{
 			result = &(*i);
 			break;
@@ -326,7 +330,7 @@ RoomInfo *RoomSet::findRoom (bool up, bool down, bool left, bool right, bool tel
 	return result;
 }
 
-Room::Room (Objects *o, RoomInfo *ri, int monsterHp) : roomInfo(ri), objects (o), map (NULL)
+Room::Room (Objects *o, RoomInfo *ri, int monsterHp, int aInitFlags) : roomInfo(ri), objects (o), map (NULL)
 {
 	assert(ri);
 	doors[0] = NULL;
@@ -335,7 +339,14 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp) : roomInfo(ri), objects (o)
 	doors[3] = NULL;
 	teleport = NULL;
 	map = ri->map;
+	initFlags = aInitFlags;
+	bananaCount = 0;
 	
+	int keyCount = 0;
+	
+	int maxKeys = (initFlags & INIT_KEY ? 1 : 0);
+	int maxBananas = (initFlags & INIT_BANANA ? 1 : 0);
+
 	// add monsters, doors, etc. (but do not link doors yet)
 	vector <ObjectInfo>::iterator i;
 	for (i = ri->objectInfo.begin(); i != ri->objectInfo.end(); ++i)
@@ -353,10 +364,12 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp) : roomInfo(ri), objects (o)
 				break;
 			case ObjectInfo::TELEPORT:
 				{
-					Teleport *t = new Teleport (this);
-					t->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
-					objects->add (t);
-					teleport = t;
+					if (initFlags & INIT_TELEPORTER) {
+						Teleport *t = new Teleport (this);
+						t->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
+						objects->add (t);
+						teleport = t;
+					}
 				}
 				break;
 			case ObjectInfo::MONSTER:
@@ -368,15 +381,27 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp) : roomInfo(ri), objects (o)
 				break;
 			case ObjectInfo::BANANA:
 				{
-					Banana *b = new Banana (this);
-					b->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
-					objects->add (b);
+					if (bananaCount < maxBananas) {
+						PickUp *b = new PickUp (this, OT_BANANA);
+						b->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
+						objects->add (b);
+						bananaCount++;
+					}
+					else if (keyCount < maxKeys) {
+						PickUp *b = new PickUp (this, OT_KEY);
+						b->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
+						objects->add (b);
+						keyCount++;
+					}
 				}
 				break;
 			case ObjectInfo::PLAYER:
 				break;
 		}
 	}
+
+	assert(keyCount == maxKeys);
+	assert(bananaCount == maxBananas);
 }
 
 void Room::linkDoor (Room *otherRoom, int dir, bool reverse)
@@ -417,12 +442,6 @@ int Level::getBananaCount()
 	return result;
 }
 
-int Room::getBananaCount()
-{
-	assert (roomInfo);
-	return roomInfo->bananas;
-}
-
 Level* createLevel2(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp) {
 	// each node becomes a room
 
@@ -433,8 +452,24 @@ Level* createLevel2(RoomSet *roomSet, Objects *objects, unsigned int numRooms, i
 	map<Node*, Room*> node2room;
 
 	for (auto n : nodes) {
+
+		int initFlags = 
+			(n->hasLink(N) ? INIT_DOOR_N : 0) |
+			(n->hasLink(E) ? INIT_DOOR_E : 0) |
+			(n->hasLink(S) ? INIT_DOOR_S : 0) |
+			(n->hasLink(W) ? INIT_DOOR_W : 0) |
+			(n->hasLink(TELEPORT) ? INIT_TELEPORTER : 0) |
+			(n->hasLock(N) ? INIT_LOCK_N : 0) |
+			(n->hasLock(E) ? INIT_LOCK_E : 0) |
+			(n->hasLock(S) ? INIT_LOCK_S : 0) |
+			(n->hasLock(W) ? INIT_LOCK_W : 0) |
+			(n->hasBanana ? INIT_BANANA : 0) |
+			(n->hasKeycard ? INIT_KEY : 0) |
+			((n->pStart == 1) ? INIT_P1_START : 0) |
+			((n->pStart == 2) ? INIT_P2_START : 0);
+			
 		Room *r = new Room(objects, roomSet->findRoom(
-			n->hasLink(N), n->hasLink(S), n->hasLink(W), n->hasLink(E), n->hasLink(TELEPORT)), monsterHp);
+			n->hasLink(N), n->hasLink(S), n->hasLink(W), n->hasLink(E), n->hasLink(TELEPORT)), monsterHp, initFlags);
 		level->rooms.push_back(r);
 		node2room[n] = r;
 	}

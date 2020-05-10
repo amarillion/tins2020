@@ -32,14 +32,27 @@ class Bullet : public Object
 		static Anim *bullet[1];
 };
 
-class Banana : public Object
+class PickUp : public Object
 {
+	int type;
 	public:		
-		Banana(Room *r) : Object (r) { solid = true; setAnim (banana); }
-		virtual int getType () { return OT_BANANA; }
+		PickUp(Room *r, int type) : Object (r) { 
+			solid = true; 
+			this->type = type;
+			switch(type) {
+				case OT_BANANA: setAnim(banana); break;
+				case OT_HEALTH: setAnim(health); break;
+				case OT_KEY: setAnim(key); break;
+			}
+
+		}
+		virtual int getType () { 
+			return type; 
+		}
 		virtual void handleCollission(ObjectBase *o);
 		static void init(Resources *res);		
-		static Anim *banana;
+		
+		static Anim *banana, *key, *health;
 };
 
 class PlayerState
@@ -51,16 +64,15 @@ class PlayerState
 	static const int defaultHpMax= 100;
 	
 	// player stats	
-	int hp; // hitpoints
-	int hpMax; // max hitpoints
-	int wpnSpeed; // weapon rate of fire
-	int wpnRange; // weapon range, distance bullets can go
-	int wpnDamage; 
-	int bananas; // bananas collected
-	int xp; // gold collected for killing monsters
-	bool died;
-	
-	PlayerState();
+	int hp = defaultHpMax; // hitpoints
+	int hpMax = defaultHpMax; // max hitpoints
+	int wpnSpeed = defaultWpnSpeed; // weapon rate of fire
+	int wpnRange = defaultWpnRange; // weapon range, distance bullets can go
+	int wpnDamage = defaultWpnDamage; 
+	int bananas = 0; // bananas collected
+	int keys = 0; // keys collected
+	int xp = 0; // gold collected for killing monsters
+	bool died = false;
 };
 
 class Player : public Object

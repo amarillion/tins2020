@@ -71,7 +71,7 @@ void Bullet::handleCollission(ObjectBase *o)
 	}
 }
 	
-void Banana::handleCollission(ObjectBase *o)
+void PickUp::handleCollission(ObjectBase *o)
 {
 	if (o->getType() == OT_PLAYER)
 	{
@@ -79,13 +79,16 @@ void Banana::handleCollission(ObjectBase *o)
 	}
 }
 
-void Banana::init(Resources *res)
+void PickUp::init(Resources *res)
 {
 	banana = res->getAnim("banana");
+	health = res->getAnim("health");
+	key = res->getAnim("key");
 }
 
-Anim *Banana::banana;
-
+Anim *PickUp::banana;
+Anim *PickUp::health;
+Anim *PickUp::key;
 
 Player::Player(PlayerState *_ps, Room *r, int _playerType) : Object (r)
 {
@@ -214,10 +217,13 @@ void Player::hit(int damage)
 void Player::handleCollission (ObjectBase *o)
 {
 	if (ps->died) return;
-	if (o->getType() == OT_BANANA) // monster
+	if (o->getType() == OT_BANANA) // pick-up
 	{
 		ps->bananas++;
-	}	
+	}
+	else if (o->getType() == OT_KEY) {
+		ps->keys++;
+	}
 	if (o->getType() == OT_MONSTER) // monster
 	{
 		if (hittimer == 0) hit(10); // TODO: damage determined by monster
@@ -254,17 +260,4 @@ void Player::handleCollission (ObjectBase *o)
 	{		
 		
 	}
-}
-
-PlayerState::PlayerState()
-{
-	// player stats	
-	hp = defaultHpMax; // hitpoints
-	hpMax = defaultHpMax; // max hitpoints
-	wpnSpeed = defaultWpnSpeed; // weapon rate of fire
-	wpnRange = defaultWpnRange; // weapon range, distance bullets can go
-	wpnDamage = defaultWpnDamage; 
-	bananas = 0; // bananas collected
-	xp = 0; // gold collected for killing monsters
-	died = false;
 }

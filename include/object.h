@@ -19,7 +19,14 @@ class Resources;
 
 enum {UP, DOWN, LEFT, RIGHT};
 
-enum { OT_MONSTER, OT_BULLET, OT_PLAYER, OT_DOOR, OT_TELEPORT, OT_BANANA };
+enum { 
+	OT_MONSTER, OT_BULLET, OT_PLAYER, OT_DOOR, OT_TELEPORT, 
+	
+	OT_BANANA,
+	OT_HEALTH,
+	OT_KEY,
+
+};
 
 static const int dir_mult[2][4] = { { 0, 0, -1, 1 }, {-1, 1, 0, 0 } };
 

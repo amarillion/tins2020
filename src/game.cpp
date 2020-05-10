@@ -134,8 +134,9 @@ void Game::drawStatus (ALLEGRO_BITMAP *buffer, int x, int y, PlayerState *xps)
 	int bananasGot = 0;
 	for (int i = 0; i < settings->numPlayers; ++i) bananasGot += ps[i].bananas;
 	al_draw_textf (gamefont, YELLOW, x + 8, y + 8, ALLEGRO_ALIGN_LEFT, "BANANAS %02i LEFT %02i", xps->bananas, bananaCount - bananasGot);
-	al_draw_textf (gamefont, RED, x + 8, y + 24, ALLEGRO_ALIGN_LEFT, "HEALTH %03i MAX %03i", xps->hp, xps->hpMax);
-	al_draw_textf (gamefont, WHITE, x + 8, y + 40, ALLEGRO_ALIGN_LEFT, "XP %05i", xps->xp);
+	al_draw_textf (gamefont, CYAN, x + 8, y + 24, ALLEGRO_ALIGN_LEFT, "KEYS %02i", xps->keys);
+	al_draw_textf (gamefont, RED, x + 8, y + 40, ALLEGRO_ALIGN_LEFT, "HEALTH %03i MAX %03i", xps->hp, xps->hpMax);
+	al_draw_textf (gamefont, WHITE, x + 8, y + 56, ALLEGRO_ALIGN_LEFT, "XP %05i", xps->xp);
 }
 
 void Game::initGame ()
