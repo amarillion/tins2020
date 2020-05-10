@@ -43,7 +43,91 @@
 	<anim id='bullet' rle='bullets' dx='16' dy='16' regionw='40' regionh='40'>
 		<frame originx='40' time='0' hotx='-12' hoty='-12'/>
 	</anim>
-	<anim id='monster1' dx='28' dy='28'>
+	<anim rle='FlowerPink' id='monster5' dx='30' dy='40' regionw='60' regionh='60' hotx='-15' hoty='-18'>
+		<state>
+			<frame originx='0' time='200'/>
+			<frame originx='60' time='200'/>
+		</state>
+		<state>
+			<frame originx='0' time='100'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='60' time='100'/>
+		</state>
+	</anim>
+	<anim rle='FlowerBlue' id='monster1' dx='30' dy='40' regionw='60' regionh='60' hotx='-15' hoty='-18'>
+		<state>
+			<frame originx='0' time='200'/>
+			<frame originx='60' time='200'/>
+		</state>
+		<state>
+			<frame originx='0' time='100'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='60' time='100'/>
+		</state>
+	</anim>
+	<anim rle='BellBlue' id='monster6' dx='40' dy='40' regionw='60' regionh='60' hotx='-12' hoty='-18'>
+		<state>
+			<frame originx='0' time='200'/>
+			<frame originx='60' time='200'/>
+		</state>
+		<state>
+			<frame originx='0' time='100'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='50' time='100'/>
+		</state>
+	</anim>
+	<anim rle='BellOrange' id='monster2' dx='40' dy='40' regionw='60' regionh='60' hotx='-12' hoty='-18'>
+		<state>
+			<frame originx='0' time='200'/>
+			<frame originx='60' time='200'/>
+		</state>
+		<state>
+			<frame originx='0' time='100'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='50' time='100'/>
+		</state>
+	</anim>
+	<anim rle='BugBlue' id='monster3' dx='20' dy='20' regionw='30' regionh='30'>
+		<state>
+			<frame originx='0' time='200' hotx='-5' hoty='-5'/>
+			<frame originx='30' time='200' hotx='-5' hoty='-5'/>
+		</state>
+		<state>
+			<frame originx='0' time='100' hotx='-5' hoty='-5'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='30' time='100' hotx='-5' hoty='-5'/>
+		</state>
+	</anim>
+	<anim rle='BugRed' id='monster4' dx='20' dy='20' regionw='30' regionh='30'>
+		<state>
+			<frame originx='0' time='200' hotx='-5' hoty='-5'/>
+			<frame originx='30' time='200' hotx='-5' hoty='-5'/>
+		</state>
+		<state>
+			<frame originx='0' time='100' hotx='-5' hoty='-5'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='30' time='100' hotx='-5' hoty='-5'/>
+		</state>
+	</anim>
+	<anim rle='BugGreen' id='monster5' dx='20' dy='20' regionw='30' regionh='30'>
+		<state>
+			<frame originx='0' time='200' hotx='-5' hoty='-5'/>
+			<frame originx='30' time='200' hotx='-5' hoty='-5'/>
+		</state>
+		<state>
+			<frame originx='0' time='100' hotx='-5' hoty='-5'>
+				<lit r='255' g='255' b='255'/>
+			</frame>
+			<frame originx='30' time='100' hotx='-5' hoty='-5'/>
+		</state>
+	</anim>
+	<anim id='old_monster1' dx='28' dy='28'>
 		<state>
 			<frame rle='target1' time='200' hotx='-6' hoty='-6'/>
 			<frame rle='target2' time='200' hotx='-6' hoty='-6'/>
@@ -55,7 +139,7 @@
 			<frame rle='target1' time='100' hotx='-6' hoty='-6'/>
 		</state>
 	</anim>
-	<anim id='monster2'  dx='28' dy='28'>
+	<anim id='old_monster2'  dx='28' dy='28'>
 		<state>
 			<frame rle='batice1' time='200' hotx='-6' hoty='-6'/>
 			<frame rle='batice2' time='200' hotx='-6' hoty='-6'/>
@@ -67,7 +151,7 @@
 			<frame rle='batice1' time='100' hotx='-6' hoty='-6'/>
 		</state>
 	</anim>
-	<anim id='monster3'  dx='28' dy='28'>
+	<anim id='old_monster3'  dx='28' dy='28'>
 		<state>
 			<frame rle='bunny1' time='200' hotx='-6' hoty='-6'/>
 			<frame rle='bunny2' time='200' hotx='-6' hoty='-6'/>
@@ -79,7 +163,7 @@
 			<frame rle='bunny1' time='100' hotx='-6' hoty='-6'/>
 		</state>
 	</anim>
-	<anim id='monster4'  dx='28' dy='28'>
+	<anim id='old_monster4'  dx='28' dy='28'>
 		<state>
 			<frame rle='tux1' time='200' hotx='-6' hoty='-6'/>
 			<frame rle='tux2' time='200' hotx='-6' hoty='-6'/>
