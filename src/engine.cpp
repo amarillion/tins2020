@@ -77,8 +77,8 @@ int Engine::init()
 	//TODO: store tileset reference in map itself.
 	for (auto key : levels) {
 
-		auto filename = string_format("data/%s-tiled.json", key.c_str());
-		int result = resources.addJsonMapFile(key, filename, "tiles1");
+		auto filename = string_format("data/%s-remapped.json", key.c_str());
+		int result = resources.addJsonMapFile(key, filename, "tiles2");
 		if (!result)
 		{
 			allegro_message ("Could not load all resources!\n%s", resources.getErrorMsg());
