@@ -77,7 +77,7 @@ class Player : public Object
 
 	static Anim *walk[2];
 	static ALLEGRO_SAMPLE *shoot[6];
-	enum Samples { HURT1, HURT2, UNLOCK, STEPS, PICKUP_KEY, PICKUP_OTHER, SAMPLE_NUM };
+	enum Samples { HURT1, HURT2, UNLOCK, STEPS, PICKUP_KEY, PICKUP_OTHER, TELEPORT, SAMPLE_NUM };
 	static ALLEGRO_SAMPLE *samples[SAMPLE_NUM];
 	
 	int hittimer;

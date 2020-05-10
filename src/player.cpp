@@ -120,6 +120,7 @@ void Player::init(Resources *res)
  	samples[PICKUP_OTHER] = res->getSample ("Pick_up_key_1");
  	samples[UNLOCK] = res->getSample ("Door_unlock");
  	samples[STEPS] = res->getSample ("Footsteps_double");
+ 	samples[TELEPORT] = res->getSample ("AlienSiren");
 
 	shoot[0] = res->getSample ("Strum_1");
 	shoot[1] = res->getSample ("Strum_2");
@@ -259,8 +260,8 @@ void Player::handleCollission (ObjectBase *o)
 		if (transportCounter == 0)
 		{
 			Door *d = dynamic_cast<Door*>(o);
-			MainLoop::getMainLoop()->playSample (samples[STEPS]);
 			assert (d);
+			MainLoop::getMainLoop()->playSample (samples[STEPS]);
 			if (d->otherRoom != NULL)
 			{
 				setRoom(d->otherRoom);
@@ -275,6 +276,7 @@ void Player::handleCollission (ObjectBase *o)
 		{
 			Door *t = dynamic_cast<Door*>(o);
 			assert (t);
+			MainLoop::getMainLoop()->playSample (samples[TELEPORT]);
 			if (t->otherRoom != NULL)
 			{
 				setRoom(t->otherRoom);
