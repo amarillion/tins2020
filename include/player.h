@@ -76,7 +76,9 @@ class Player : public Object
 	int transportCounter;
 
 	static Anim *walk[2];
-	static ALLEGRO_SAMPLE *hurt[2];
+	static ALLEGRO_SAMPLE *shoot[6];
+	enum Samples { HURT1, HURT2, UNLOCK, STEPS, PICKUP_KEY, PICKUP_OTHER, SAMPLE_NUM };
+	static ALLEGRO_SAMPLE *samples[SAMPLE_NUM];
 	
 	int hittimer;
 	int attacktimer;

@@ -6,6 +6,7 @@
 #include "door.h"
 #include "game.h"
 #include "mainloop.h"
+#include "util.h"
 
 Anim *Bullet::bullet[1];
 
@@ -105,15 +106,28 @@ Player::Player(PlayerState *_ps, Room *r, int _playerType) : Object (r, OT_PLAYE
 }
 
 Anim *Player::walk[2];
-ALLEGRO_SAMPLE *Player::hurt[2];
+ALLEGRO_SAMPLE *Player::samples[Player::SAMPLE_NUM];
+ALLEGRO_SAMPLE *Player::shoot[6];
 
 void Player::init(Resources *res)
 {
 	walk[0] = res->getAnim ("fole_walk");
 	walk[1] = res->getAnim ("raul_walk");
 
- 	hurt[0] = res->getSample ("miau2");
- 	hurt[1] = res->getSample ("uh");
+ 	samples[HURT1] = res->getSample ("miau2");
+ 	samples[HURT2] = res->getSample ("uh");
+ 	samples[PICKUP_KEY] = res->getSample ("Pick_up_key_2");
+ 	samples[PICKUP_OTHER] = res->getSample ("Pick_up_key_1");
+ 	samples[UNLOCK] = res->getSample ("Door_unlock");
+ 	samples[STEPS] = res->getSample ("Footsteps_double");
+
+	shoot[0] = res->getSample ("Strum_1");
+	shoot[1] = res->getSample ("Strum_2");
+	shoot[2] = res->getSample ("Strum_3");
+	shoot[3] = res->getSample ("Strum_4");
+	shoot[4] = res->getSample ("Strum_5");
+	shoot[5] = res->getSample ("Strum_6");
+
 }
 
 void Player::update()
@@ -146,8 +160,9 @@ void Player::update()
 		if (button[btnAction].getState())
 		{
 			attacktimer = ps->wpnSpeed;
-// 			parent->getParent()->playSample (shoot);
-
+			int idx = random(6);
+			MainLoop::getMainLoop()->playSample (shoot[idx]);
+	
 			// generate bullet...
 			Bullet *bullet = new Bullet(getRoom(), getDir(), ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
 			game->getObjects()->add (bullet);
@@ -203,7 +218,7 @@ void Player::hit(int damage)
 {
 	hittimer = 50;
 	
-	MainLoop::getMainLoop()->playSample (hurt[playerType]);
+	MainLoop::getMainLoop()->playSample (samples[playerType == 0 ? HURT1 : HURT2]);
 	
 	ps->hp -= damage;
 	if (ps->hp <= 0)
@@ -219,9 +234,11 @@ void Player::handleCollission (ObjectBase *o)
 	if (ps->died) return;
 	if (o->getType() == OT_BANANA) // pick-up
 	{
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_OTHER]);
 		ps->bananas++;
 	}
 	else if (o->getType() == OT_KEY) {
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_KEY]);
 		ps->keys++;
 	}
 	if (o->getType() == OT_MONSTER) // monster
@@ -232,7 +249,9 @@ void Player::handleCollission (ObjectBase *o)
 		if (ps->keys > 0) {
 			Door *d = dynamic_cast<Door*>(o);			
 			d->setLocked(false);
+			MainLoop::getMainLoop()->playSample (samples[UNLOCK]);
 			ps->keys--;
+			// transportCounter = transportDelay; // avoid going through straight away
 		}
 	}	
 	if (o->getType() == OT_DOOR) // exit
@@ -240,6 +259,7 @@ void Player::handleCollission (ObjectBase *o)
 		if (transportCounter == 0)
 		{
 			Door *d = dynamic_cast<Door*>(o);
+			MainLoop::getMainLoop()->playSample (samples[STEPS]);
 			assert (d);
 			if (d->otherRoom != NULL)
 			{

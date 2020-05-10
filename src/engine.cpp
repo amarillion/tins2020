@@ -56,7 +56,7 @@ int Engine::init()
 	Anim::setDirectionModel (make_shared<DirectionModel>(directions, 4));
 
 	if (!(
-		// resources.addFiles("data/*.ogg") &&
+		resources.addFiles("data/sfx/*.ogg") &&
 		resources.addFiles("data/*.png") &&
 		resources.addFiles("data/anim.xml") &&
 		resources.addFiles("data/*.ttf") &&
