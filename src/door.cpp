@@ -32,3 +32,25 @@ void Door::link(Door *door, bool reverse)
 		door->otherRoom = getRoom();
 	}
 }
+
+void Door::setLocked(bool value, bool reverse) {
+	
+	if (value != locked) {
+		if (value) {
+			assert(type == OT_DOOR);
+			type = OT_LOCKED_DOOR;
+			setState(1);
+		}
+		else {
+			assert(type == OT_LOCKED_DOOR);
+			type = OT_DOOR;
+			setState(0);
+		}
+		locked = value;
+	}
+
+	if (reverse) {
+		assert(otherDoor);
+		otherDoor->setLocked(value, false);
+	}
+}

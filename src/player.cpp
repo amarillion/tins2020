@@ -227,6 +227,13 @@ void Player::handleCollission (ObjectBase *o)
 	if (o->getType() == OT_MONSTER) // monster
 	{
 		if (hittimer == 0) hit(10); // TODO: damage determined by monster
+	}
+	if (o->getType() == OT_LOCKED_DOOR) {
+		if (ps->keys > 0) {
+			Door *d = dynamic_cast<Door*>(o);			
+			d->setLocked(false);
+			ps->keys--;
+		}
 	}	
 	if (o->getType() == OT_DOOR) // exit
 	{		

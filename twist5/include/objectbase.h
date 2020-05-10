@@ -41,6 +41,7 @@ public:
 	virtual void handleCollission(ObjectBase *o) = 0;
 	virtual int getType () = 0;
 	int getDir() { return dir; }
+	void setState(int val) { animstate = val; } 
 	virtual void setDir(int _dir) { dir = _dir; }
 	virtual void setLocation (double nx, double ny);
 	static void init(bool *_debugFlag, ITimer *_timer) { debugFlag = _debugFlag; timer = _timer; }

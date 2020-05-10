@@ -18,6 +18,8 @@ class Door : public Object
 		bool locked = false;
 
 		static Anim *doorSprite, *teleportSprite;
+
+		void setLocked(bool value, bool reverse = true);
 };
 
 #endif

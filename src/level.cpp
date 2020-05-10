@@ -59,144 +59,6 @@ Level *createTestLevel(RoomSet *roomSet, Resources *resources, Objects *objects,
 	return level;
 }
 
-Level *createLevel(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp)
-{
-	const int up = 0x100;
-	const int down = 0x200;
-	const int left = 0x400;
-	const int right = 0x800;
-	const int start = 0x1000;
-	const int used = 0x2000;
-	const int teleport = 0x4000;
-	const int side = 8;
-	const int maxRooms = side * side;
-	const int dr[4] = { -side, side, -1, 1 };
-	const int df[4] = { up, down, left, right };
-	const int dopp[4] = { 1, 0, 3, 2 };
-	vector<int> rooms;
-	int matrix[maxRooms];	
-	if (numRooms > (unsigned int)maxRooms) numRooms = maxRooms;
-	for (int i = 0; i < maxRooms; ++i) matrix[i] = 0;
-	{
-		int x = rand () % maxRooms;
-		
-		matrix[x] |= start | used;
-		rooms.push_back (x);
-	}
-	
-	while (rooms.size() < numRooms)
-	{
-		bool ok = false;
-		int src;
-		int dest;
-		int d;
-		// look for a room (src) with a connection (d) to an unoccupied space (dest).
-		while (!ok)
-		{
-			int r = rand() % rooms.size();
-			d = (rand() >> 4) % 4;
-			src = rooms[r];
-			dest = (src + dr[d]);
-			while (dest < 0) dest += maxRooms;
-			dest %= maxRooms;	
-			if (matrix[dest] == 0)
-			{
-				ok = true;
-			}			
-		}
-		
-		// add door
-		matrix[dest] |= used;
-		rooms.push_back (dest);
-		
-		// create link
-		int o = dopp[d]; // dir opposite to d
-		matrix[src] |= df[d]; // flag for this dir
-		matrix[dest] |= df[o]; // flag for opposite dir
-	}
-	
-	// add some teleporters
-	for (unsigned int i = 0; i < numRooms; i += 4) // one teleporter per 4 rooms
-	{
-		bool ok = false;
-		int src = 0, dest = 0;
-		while (!ok)
-		{
-			int rsrc = rand() % rooms.size();
-			src = rooms[rsrc];
-			if (!(matrix[src] & teleport))
-			{
-				int rdest = rand() % rooms.size();
-				dest = rooms[rdest];
-				if (dest != src && rsrc != rdest && 
-						(!(matrix[dest] & teleport))
-					)
-				{
-					ok = true;
-				}
-			}
-		}
-		assert (!(matrix[src] & teleport));
-		assert (!(matrix[dest] & teleport));
-		assert (src < maxRooms);
-		assert (dest < maxRooms);
-		assert (src >= 0);
-		assert (dest >= 0);
-		matrix[src] |= dest | teleport;
-		matrix[dest] |= src | teleport;
-	}
-	
-	Level *level = new Level();
-
-	Room *matrix2[maxRooms];
-	for (int i = 0; i < maxRooms; ++i) matrix2[i] = NULL;
-
-	for (vector<int>::iterator i = rooms.begin(); i != rooms.end(); ++i)
-	{
-		int src = (*i);
-		assert (matrix[src] > 0);
-		RoomInfo *ri = roomSet->findRoom(
-			matrix[src] & up, matrix[src] & down, 
-			matrix[src] & left, matrix[src] & right, matrix[src] & teleport);
-		if (!ri)
-		{
-			allegro_message ("Couldn't find roominfo for %i", matrix[src]);
-		}
-		assert (ri);
-		
-		Room *temp = new Room(objects, ri, monsterHp);
-		assert (temp);
-		
-		matrix2[src] = temp;
-		level->rooms.push_back(temp);
-		
-		for (int d = 0; d < 4; ++d)
-		{
-			int dest = (src + dr[d]);
-			while (dest < 0) dest += maxRooms;
-			dest %= maxRooms;	
-			if ((matrix[src] & df[d]) && matrix2[dest])
-			{
-				assert (matrix[dest] > 0);
-				// create door link
-				matrix2[src]->linkDoor (matrix2[dest], d);
-			}
-		}
-		if (matrix[src] & teleport)
-		{
-			int dest = matrix[src] & 0xFF;
-			assert ((matrix[dest] & 0xFF) == src);
-			if (matrix2[dest])
-			{
-				// create teleport link
-				matrix2[src]->linkTeleport (matrix2[dest]);
-			}
-		}
-	}
-	
-	return level;
-}
-
 RoomSet *RoomSet::loadFromFile (string filename, Resources *res)
 {
 	DomNode node = xmlParseFile(filename);
@@ -402,7 +264,7 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp, int aInitFlags) : roomInfo(
 	assert(bananaCount == maxBananas);
 }
 
-void Room::linkDoor (Room *otherRoom, int dir, bool reverse)
+void Room::linkDoor (Room *otherRoom, int dir, bool reverse, bool locked)
 {
 	const int opposite[4] = {1, 0, 3, 2};
 	int odir = opposite[dir];
@@ -410,6 +272,11 @@ void Room::linkDoor (Room *otherRoom, int dir, bool reverse)
 	assert (otherRoom);
 	assert (otherRoom->doors[odir]);
 	doors[dir]->link(otherRoom->doors[odir], reverse);
+}
+
+void Room::lockDoor (int dir) {
+	assert(doors[dir]);
+	doors[dir]->setLocked(true);
 }
 
 void Room::linkTeleport (Room *otherRoom, bool reverse)
@@ -440,7 +307,7 @@ int Level::getBananaCount()
 	return result;
 }
 
-Level* createLevel2(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp) {
+Level* createLevel(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp) {
 	// each node becomes a room
 
 	Map2D<Cell> grid = createKruskalMaze(10);
@@ -480,12 +347,22 @@ Level* createLevel2(RoomSet *roomSet, Objects *objects, unsigned int numRooms, i
 			assert(src);
 			assert(dest);
 
+			int legacyDir = -1;
 			switch(dir) {
-				case N: src->linkDoor(dest, 0, false); break;
-				case S: src->linkDoor(dest, 1, false); break;
-				case W: src->linkDoor(dest, 2, false); break;
-				case E: src->linkDoor(dest, 3, false); break;
-				case TELEPORT: src->linkTeleport(dest, false); break;
+				case N: legacyDir = 0; break;
+				case S: legacyDir = 1; break;
+				case W: legacyDir = 2; break;
+				case E: legacyDir = 3; break;
+				case TELEPORT: /* no corresponding legacy dir */ break;
+			}
+
+			switch(dir) {
+				case N: case S: case W: case E:
+					src->linkDoor(dest, legacyDir, false); 
+					if (n->hasLock(dir)) src->lockDoor(legacyDir);
+					break;
+				case TELEPORT: src->linkTeleport(dest, false); 
+					break;
 			}
 		}
 	}
