@@ -466,6 +466,24 @@ public:
 		return 1;
 	}
 
+	int addStream(const string &id, const string &filename) {
+		ALLEGRO_AUDIO_STREAM *temp;
+		if (!(temp = al_load_audio_stream (filename.c_str(), 4, 2048))) //TODO: correct values for al_load_audio_stream
+		{
+			snprintf(errorMsg, sizeof(errorMsg), "error loading Stream %s", id.c_str());
+			return 0;
+		}
+		else {
+			al_set_audio_stream_playmode(temp, ALLEGRO_PLAYMODE_LOOP );
+			// al_set_audio_stream_playing(temp, false); //TODO???
+			// al_attach_audio_stream_to_mixer(temp, al_get_default_mixer()); // TODO?
+			assert (duhlist.find(id) == duhlist.end()); // fails if you overload the same id.
+			duhlist[id] = temp;
+		}
+		
+		return 1;
+	}
+
 	int addMapFile(const string &filename, const string &tilesname)
 	{
 		TEG_TILELIST *temptiles = getTilelist (tilesname);
@@ -647,6 +665,10 @@ Anim *ResourcesImpl::getAnim (const string &id)
 ALLEGRO_AUDIO_STREAM *Resources::getMusic (const string &id)
 {
 	return pImpl->getMusic(id);
+}
+
+int Resources::addStream(const string &id, const string &filename) {
+	return pImpl->addStream(id, filename);
 }
 
 #ifdef USE_TEGEL

@@ -70,6 +70,7 @@ public:
 	std::string getTextFile(const std::string &id);
 	//TODO: rename to getMusic
 	ALLEGRO_AUDIO_STREAM *getMusic (const std::string &id);
+	int addStream(const std::string &id, const std::string &filename);
 #ifdef USE_ALSPC
 	ALSPC_DATA *getSPC (const std::string &id);
 #endif

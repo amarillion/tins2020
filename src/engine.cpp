@@ -56,13 +56,14 @@ int Engine::init()
 	Anim::setDirectionModel (make_shared<DirectionModel>(directions, 4));
 
 	if (!(
-		resources.addFiles("data/*.MOD") &&
+		// resources.addFiles("data/*.ogg") &&
 		resources.addFiles("data/*.png") &&
 		resources.addFiles("data/anim.xml") &&
 		resources.addFiles("data/*.ttf") &&
 		resources.addFiles("data/*.tll") &&
 		resources.addFiles("data/*.wav") &&
-		resources.addFiles("data/*.tga")
+		resources.addFiles("data/*.tga") &&
+		resources.addStream("Flower_field", "data/music/Flower_field.ogg")
 		))
 	{
 		allegro_message ("Could not load all resources with error %s!", resources.getErrorMsg());
@@ -107,66 +108,9 @@ int Engine::init()
 	return 0;
 }
 
- /*
-  // TODO: clean up
-
-		case MENU: // run menu
-			menu.update();
-			result = menu.getState();
-			switch (result)
-			{
-				case 0: state = QUIT; break; // quit
-				case 1:
-					engine.initGame();
-					playMusic(resources.getDuh("SYREEN"));
-					state = GAME;
-					break; // start new game
-				case 2:
-					engine.resume();
-					playMusic(resources.getDuh("SYREEN"));
-					state = GAME;
-					break; // resume game
-				case -1: break; // continue showing menu
-				default: assert (false); // shouldn't occur
-			}
-			break;
-		case QUIT: // quit
-			kill();
-			break;
-		case GAME: // game is playing, no matter if at intro screen or play screen
-			engine.update();
-			{
-				Engine::GameState gs = engine.getState();
-				switch (gs)
-				{
-					case Engine::GS_INTRO:
-					case Engine::GS_OUTRO:
-					case Engine::GS_PLAY:
-						break; // do nothing
-					case Engine::GS_MENU_RESUME: // resume menu
-						menu.initResume();
-						stopMusic();
-						state = MENU;
-						break;
-					case Engine::GS_DONE: // go back to start menu
-						menu.initStart();
-						stopMusic();
-						state = MENU;
-						break;
-					default:
-						assert (false);
-				}
-			}
-			break;
-		default:
-			assert (false); // shouldn't occur
-	}
-
-	*/
-
 void Engine::showIntro()
 {
-	MainLoop::getMainLoop()->playMusic(resources.getMusic("SYREEN"));
+	MainLoop::getMainLoop()->playMusic(resources.getMusic("Flower_field"));
 	ContainerPtr intro = make_shared<Container>();
 	add(intro);
 	intro->add(ClearScreen::build(BLACK).get());
