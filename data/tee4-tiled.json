@@ -38,19 +38,10 @@
  "renderorder":"right-down",
  "tileheight":32,
  "tilesets":[
-        {
-         "columns":3,
-         "firstgid":1,
-         "image":"tiles1.png",
-         "imageheight":960,
-         "imagewidth":96,
-         "margin":0,
-         "name":"tiles",
-         "spacing":0,
-         "tilecount":90,
-         "tileheight":32,
-         "tilewidth":32
-        }],
+       {
+        "firstgid":1,
+        "source":"tiles1-tileset.json"
+       }],
  "tilewidth":32,
  "version":1,
  "width":30
