@@ -20,7 +20,7 @@ class Resources;
 enum {UP, DOWN, LEFT, RIGHT};
 
 enum { 
-	OT_MONSTER, OT_BULLET, OT_PLAYER, OT_DOOR, OT_TELEPORT, 
+	OT_MONSTER, OT_BULLET, OT_PLAYER, OT_DOOR, OT_LOCKED_DOOR, OT_TELEPORT, 
 	
 	OT_BANANA,
 	OT_HEALTH,
@@ -41,9 +41,10 @@ protected:
 
 	Room *room;
 	
+	int type;
 	int getTileStackFlags(int mx, int my);
 public:
-	Object (Room *r);
+	Object (Room *r, int type);
 	virtual ~Object () {}
 	
 	TEG_MAP *getMap();
@@ -51,6 +52,7 @@ public:
 	void setRoom (Room *_room);
 	Room *getRoom () { return room; }
 
+	virtual int getType() { return type; }
 	static void init(Engine *_engine, Game *_game) { engine = _engine; game = _game; }
 };
 

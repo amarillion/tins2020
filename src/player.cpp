@@ -9,7 +9,7 @@
 
 Anim *Bullet::bullet[1];
 
-Bullet::Bullet(Room *r, int _dir, int _range, int _damage, BulletType _type, Player *_parent) : Object (r)
+Bullet::Bullet(Room *r, int _dir, int _range, int _damage, BulletType _type, Player *_parent) : Object (r, OT_BULLET)
 {
 	const int speed_factor = 6;
 	solid = false;
@@ -90,7 +90,7 @@ Anim *PickUp::banana;
 Anim *PickUp::health;
 Anim *PickUp::key;
 
-Player::Player(PlayerState *_ps, Room *r, int _playerType) : Object (r)
+Player::Player(PlayerState *_ps, Room *r, int _playerType) : Object (r, OT_PLAYER)
 {
 	ps = _ps;
 	transportCounter = 0;
@@ -246,12 +246,12 @@ void Player::handleCollission (ObjectBase *o)
 	{
 		if (transportCounter == 0)
 		{
-			Teleport *t = dynamic_cast<Teleport*>(o);
+			Door *t = dynamic_cast<Door*>(o);
 			assert (t);
 			if (t->otherRoom != NULL)
 			{
 				setRoom(t->otherRoom);
-				setLocation(t->otherTeleport->getx(), t->otherTeleport->gety());
+				setLocation(t->otherDoor->getx(), t->otherDoor->gety());
 			}
 		}
 		transportCounter = transportDelay; // make sure we don't go back		

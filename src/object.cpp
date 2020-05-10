@@ -43,13 +43,14 @@ int Object::getTileStackFlags(int mx, int my)
 	}
 }
 
-Object::Object (Room *r) : ObjectBase()
+Object::Object (Room *r, int aType) : ObjectBase()
 {
 	assert (r);
 	w = 8;
 	h = 8;
 	dir = RIGHT;
 	room = r;
+	type = aType;
 }
 
 void Object::try_move (al_fixed dx, al_fixed dy)

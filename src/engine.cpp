@@ -95,7 +95,6 @@ int Engine::init()
 	Door::init(&resources);
 	Monster::init(&resources);
 	PickUp::init(&resources);
-	Teleport::init(&resources);
 
 	game->init(&resources);
 	gamefont = resources.getFont("fixed_font");

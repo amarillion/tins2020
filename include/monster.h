@@ -27,7 +27,6 @@ public:
 	static void init(Resources *res);
 	virtual void update() override;
 
-	virtual int getType () { return OT_MONSTER; }
 	virtual void handleCollission(ObjectBase *o);
 };
 

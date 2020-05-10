@@ -12,7 +12,6 @@
 class Object;
 class Objects;
 class Door;
-class Teleport;
 
 enum RoomFlags {
 	INIT_KEY = 0x01, 
@@ -83,7 +82,7 @@ class Room
 		Objects *objects; // global object container
 		
 		Door *doors[4]; // list of Doors in this room
- 		Teleport *teleport;
+ 		Door *teleport;
 
 		int initFlags; // room initialization flags...
 		int bananaCount; 

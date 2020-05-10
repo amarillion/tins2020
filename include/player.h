@@ -25,7 +25,6 @@ class Bullet : public Object
 		Bullet(Room *r, int _dir, int _range, int _damage, BulletType _type, Player *_parent);
 		
 		virtual void update() override;
-		virtual int getType () { return OT_BULLET; }
 		virtual void handleCollission(ObjectBase *o);
 		static void init(Resources *res);
 		
@@ -34,20 +33,15 @@ class Bullet : public Object
 
 class PickUp : public Object
 {
-	int type;
 	public:		
-		PickUp(Room *r, int type) : Object (r) { 
+		PickUp(Room *r, int type) : Object (r, type) { 
 			solid = true; 
-			this->type = type;
 			switch(type) {
 				case OT_BANANA: setAnim(banana); break;
 				case OT_HEALTH: setAnim(health); break;
 				case OT_KEY: setAnim(key); break;
 			}
 
-		}
-		virtual int getType () { 
-			return type; 
 		}
 		virtual void handleCollission(ObjectBase *o);
 		static void init(Resources *res);		
@@ -98,7 +92,6 @@ public:
 	Player(PlayerState *ps, Room *r, int _playerType);
 	virtual void update() override;
 	static void init(Resources *res);
-	virtual int getType () { return OT_PLAYER; }
 	virtual void handleCollission(ObjectBase *o);
 };
 

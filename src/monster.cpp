@@ -21,7 +21,7 @@ static void *l_alloc (void *ud, void *ptr, size_t osize,
     return realloc(ptr, nsize);
 }
 
-Monster::Monster(Room *r, int type, int _hp) : Object (r), monsterType (type)
+Monster::Monster(Room *r, int subType, int _hp) : Object (r, OT_MONSTER), monsterType (subType)
 {
 	setVisible(true);
 	solid = true;

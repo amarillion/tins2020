@@ -219,9 +219,7 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 		RoomInfo ri;
 		/* create two rooms, one with and one without teleporter */
 		ri.map = res->getJsonMap(h->attributes["map"])->map;
-		
 		ri.name = h->attributes["map"];
-		cout << ri.name << endl;
 
 		for (int x = 0; x < ri.map->w; ++x)
 			for (int y = 0; y < ri.map->h; ++y)
@@ -355,7 +353,7 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp, int aInitFlags) : roomInfo(
 		{
 			case ObjectInfo::DOOR:
 				{
-					Door *d = new Door (this);
+					Door *d = new Door (this, OT_DOOR);
 					d->setDir (i->doorDir);
 					d->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
 					objects->add (d);
@@ -365,7 +363,7 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp, int aInitFlags) : roomInfo(
 			case ObjectInfo::TELEPORT:
 				{
 					if (initFlags & INIT_TELEPORTER) {
-						Teleport *t = new Teleport (this);
+						Door *t = new Door (this, OT_TELEPORT);
 						t->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
 						objects->add (t);
 						teleport = t;
