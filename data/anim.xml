@@ -35,10 +35,10 @@
 			<frame rle='raulside4' time='200'  hotx='-8' hoty='-20'/>
 		</dir>
 	</anim>
-	<anim id='teleport' dx='12' dy='30'>
-		<frame rle='teleport' time='400' hotx='-8' hoty='-10'/>
-		<frame rle='teleport2' time='400' hotx='-8' hoty='-10'/>
-		<frame rle='teleport3' time='400' hotx='-8' hoty='-10'/>
+	<anim id='teleport' rle='teleport' dx='12' dy='30' regionw='32' regionh='32'>
+		<frame originx='0' time='200' hotx='-8' hoty='-10'/>
+		<frame originx='32' time='200' hotx='-8' hoty='-10'/>
+		<frame originx='64' time='200' hotx='-8' hoty='-10'/>
 	</anim>
 	<anim id='bullet' dx='16' dy='16' >
 		<dir id="up">
