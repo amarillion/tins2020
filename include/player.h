@@ -9,20 +9,16 @@ class Player;
 	
 class Bullet : public Object
 {
-	public:
-		enum BulletType { BT_NORMAL = 0 };
-	
 	private:
 		
 		al_fixed dx, dy;
 		al_fixed range; // range in pixels
 		
 		int damage;
-		BulletType type;
 		Player *parent;
 	public:
 		Player *getPlayer() { return parent; }
-		Bullet(Room *r, int _dir, int _range, int _damage, BulletType _type, Player *_parent);
+		Bullet(Room *r, int _dir, int _range, int _damage, Player *_parent);
 		
 		virtual void update() override;
 		virtual void handleCollission(ObjectBase *o);

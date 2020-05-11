@@ -10,17 +10,16 @@
 
 Anim *Bullet::bullet[1];
 
-Bullet::Bullet(Room *r, int _dir, int _range, int _damage, BulletType _type, Player *_parent) : Object (r, OT_BULLET)
+Bullet::Bullet(Room *r, int _dir, int _range, int _damage, Player *_parent) : Object (r, _parent ? OT_BULLET : OT_ENEMY_BULLET)
 {
 	const int speed_factor = 6;
 	solid = false;
-	setAnim (bullet[0]);
+	setAnim (bullet[0], type == OT_BULLET ? 0 : 1);
 	dx = (al_fixed)(dir_mult[0][_dir] * speed_factor);
 	dy = (al_fixed)(dir_mult[1][_dir] * speed_factor);
 	setDir (_dir);
 	range = _range;
 	damage = _damage;
-	type = _type;
 	parent = _parent;
 }
 
@@ -66,7 +65,11 @@ void Bullet::update()
 
 void Bullet::handleCollission(ObjectBase *o)
 {
-	if (o->getType() == OT_MONSTER) // monster
+	if (type == OT_BULLET && o->getType() == OT_MONSTER) // bullet hits monster
+	{
+		kill();
+	}
+	if (type == OT_ENEMY_BULLET && o->getType() == OT_PLAYER) // enemy bullet hits player
 	{
 		kill();
 	}
@@ -167,18 +170,18 @@ void Player::update()
 			MainLoop::getMainLoop()->playSample (shoot[idx]);
 	
 			// generate bullet...
-			Bullet *bullet = new Bullet(getRoom(), getDir(), ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
+			Bullet *bullet = new Bullet(getRoom(), getDir(), ps->wpnRange, ps->wpnDamage, this);
 			game->getObjects()->add (bullet);
 			bullet->setLocation (getx() + 8, gety());
 
 			if (ps->wpnType > 0) {
 				{
-				Bullet *bullet = new Bullet(getRoom(), (getDir() + 2) % 4, ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
+				Bullet *bullet = new Bullet(getRoom(), (getDir() + 2) % 4, ps->wpnRange, ps->wpnDamage, this);
 				game->getObjects()->add (bullet);
 				bullet->setLocation (getx() + 8, gety());
 				}
 				{
-				Bullet *bullet = new Bullet(getRoom(), (getDir() + 3) % 4, ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
+				Bullet *bullet = new Bullet(getRoom(), (getDir() + 3) % 4, ps->wpnRange, ps->wpnDamage, this);
 				game->getObjects()->add (bullet);
 				bullet->setLocation (getx() + 8, gety());
 				}
@@ -324,8 +327,8 @@ void Player::handleCollission (ObjectBase *o)
 		}
 		transportCounter = transportDelay; // make sure we don't go back		
 	}
-	else if (o->getType() == OT_BULLET) // enemy bullet (only in bananas mode)
+	else if (o->getType() == OT_ENEMY_BULLET)
 	{		
-		
+		if (hittimer == 0) hit(10); // TODO: damage determined by bullet
 	}
 }
