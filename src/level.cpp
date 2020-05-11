@@ -90,7 +90,7 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 				int tile = teg_mapget(ri.map, 2, x, y);
 				int flag = ri.map->tilelist->tiles[tile].flags;
 
-				if (flag >= 100)
+				if (tile >= 0 && flag >= 100)
 				{
 					ObjectInfo oi;
 					oi.x = x;
