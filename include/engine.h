@@ -23,7 +23,7 @@ public:
 	Resources* getResources () { return &resources; }
 
 	// menu states
-	enum { E_NONE, E_START_OR_RESUME, E_NEXT_LEVEL, MENU_SOUND, MENU_PLAYER_NUM, MENU_KEYS_1, MENU_KEYS_2, E_QUIT, MENU_MAIN,
+	enum { E_NONE, E_START_OR_RESUME, E_NEXT_LEVEL, MENU_SOUND, MENU_PLAYER_NUM, MENU_KEYS_1, MENU_KEYS_2, E_QUIT, MENU_MAIN, COVER,
 		GS_PLAY, MENU_PAUSE, GS_DONE, GS_GAME_OVER, E_TOGGLE_FULLSCREEN};
 private:
 	Resources resources;

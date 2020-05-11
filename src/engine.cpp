@@ -102,7 +102,7 @@ int Engine::init()
  	srand(time(0));
 
  	initMenu();
- 	handleMessage(nullptr, MENU_MAIN);
+ 	handleMessage(nullptr, COVER);
 
 	return 0;
 }
@@ -130,6 +130,17 @@ void Engine::handleMessage(ComponentPtr src, int code)
 {
 	switch (code)
 	{
+	case COVER:
+		{
+			ContainerPtr intro = make_shared<Container>();
+			add(intro);
+			intro->add(ClearScreen::build(BLACK).get());
+			intro->add(BitmapComp::build(resources.getBitmap("Cover")).layout(Layout::CENTER_MIDDLE_W_H, 0, 0, 256, 192).get());
+			intro->setTimer (100, MENU_MAIN);
+			intro->setTimer (100, MSG_KILL);
+			setFocus(intro);
+		}
+		break;
 	case GS_GAME_OVER:
 		{
 			game->doneLevel();
