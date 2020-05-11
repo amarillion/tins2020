@@ -151,6 +151,7 @@ RoomSet *RoomSet::loadFromXml (DomNode *n, Resources *res)
 						ri.playerStart = true;
 						break;
 					default:
+						cerr << string_format ("Found flag %i for tile %i at (%i, %i) in map %s\n", flag, tile, x, y,  ri.name);
 						assert (false); // wrong type
 						break;
 					}
