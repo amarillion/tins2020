@@ -203,9 +203,11 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp, int aInitFlags) : roomInfo(
 	bananaCount = 0;
 	
 	int keyCount = 0;
-	
+	int bonusCount = 0;
+
 	int maxKeys = (initFlags & INIT_KEY ? 1 : 0);
 	int maxBananas = (initFlags & INIT_BANANA ? 1 : 0);
+	int maxBonus = (initFlags & INIT_BONUS ? 1 : 0);
 
 	// add monsters, doors, etc. (but do not link doors yet)
 	vector <ObjectInfo>::iterator i;
@@ -252,6 +254,13 @@ Room::Room (Objects *o, RoomInfo *ri, int monsterHp, int aInitFlags) : roomInfo(
 						b->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
 						objects->add (b);
 						keyCount++;
+					}
+					else if (bonusCount < maxBonus) {
+						vector<int> choices = { OT_BONUS1, OT_BONUS2, OT_BONUS3, OT_BONUS4, OT_HEALTH };
+						PickUp *b = new PickUp (this, choice(choices));
+						b->setLocation ((al_fixed)i->x * 32, (al_fixed)i->y * 32);
+						objects->add (b);
+						bonusCount++;
 					}
 				}
 				break;
@@ -330,6 +339,7 @@ Level* createLevel(RoomSet *roomSet, Objects *objects, unsigned int numRooms, in
 			(n->hasLock(W) ? INIT_LOCK_W : 0) |
 			(n->hasBanana ? INIT_BANANA : 0) |
 			(n->hasKeycard ? INIT_KEY : 0) |
+			(n->hasBonus ? INIT_BONUS : 0) |
 			((n->pStart == 1) ? INIT_P1_START : 0) |
 			((n->pStart == 2) ? INIT_P2_START : 0);
 			

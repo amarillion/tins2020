@@ -33,20 +33,26 @@ class Bullet : public Object
 
 class PickUp : public Object
 {
-	public:		
-		PickUp(Room *r, int type) : Object (r, type) { 
-			solid = true; 
-			switch(type) {
-				case OT_BANANA: setAnim(banana); break;
-				case OT_HEALTH: setAnim(health); break;
-				case OT_KEY: setAnim(key); break;
-			}
-
+public:		
+	PickUp(Room *r, int type) : Object (r, type) { 
+		solid = true; 
+		switch(type) {
+			case OT_BANANA: setAnim(anims[AnimType::BANANA]); break;
+			case OT_HEALTH: setAnim(anims[AnimType::HEALTH]); break;
+			case OT_KEY: setAnim(anims[AnimType::KEY]); break;
+			case OT_BONUS1: setAnim(anims[AnimType::BONUS1]); break;
+			case OT_BONUS2: setAnim(anims[AnimType::BONUS2]); break;
+			case OT_BONUS3: setAnim(anims[AnimType::BONUS3]); break;
+			case OT_BONUS4: setAnim(anims[AnimType::BONUS4]); break;
+			default: assert(false);
 		}
-		virtual void handleCollission(ObjectBase *o);
-		static void init(Resources *res);		
-		
-		static Anim *banana, *key, *health;
+
+	}
+	virtual void handleCollission(ObjectBase *o);
+	static void init(Resources *res);		
+	
+	enum AnimType { BANANA, HEALTH, KEY, BONUS1, BONUS2, BONUS3, BONUS4, ANIM_NUM };
+	static Anim *anims[ANIM_NUM];
 };
 
 class PlayerState
@@ -63,6 +69,7 @@ class PlayerState
 	int wpnSpeed = defaultWpnSpeed; // weapon rate of fire
 	int wpnRange = defaultWpnRange; // weapon range, distance bullets can go
 	int wpnDamage = defaultWpnDamage; 
+	int wpnType = 0;
 	int bananas = 0; // bananas collected
 	int keys = 0; // keys collected
 	int xp = 0; // gold collected for killing monsters

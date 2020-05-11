@@ -82,14 +82,16 @@ void PickUp::handleCollission(ObjectBase *o)
 
 void PickUp::init(Resources *res)
 {
-	banana = res->getAnim("banana");
-	health = res->getAnim("health");
-	key = res->getAnim("key");
+	anims[AnimType::BANANA] = res->getAnim("banana");
+	anims[AnimType::HEALTH] = res->getAnim("health");
+	anims[AnimType::KEY] = res->getAnim("key");
+	anims[AnimType::BONUS1] = res->getAnim("bonus1");
+	anims[AnimType::BONUS2] = res->getAnim("bonus2");
+	anims[AnimType::BONUS3] = res->getAnim("bonus3");
+	anims[AnimType::BONUS4] = res->getAnim("bonus4");
 }
 
-Anim *PickUp::banana;
-Anim *PickUp::health;
-Anim *PickUp::key;
+Anim *PickUp::anims[PickUp::AnimType::ANIM_NUM];
 
 Player::Player(PlayerState *_ps, Room *r, int _playerType) : Object (r, OT_PLAYER)
 {
@@ -168,6 +170,19 @@ void Player::update()
 			Bullet *bullet = new Bullet(getRoom(), getDir(), ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
 			game->getObjects()->add (bullet);
 			bullet->setLocation (getx() + 8, gety());
+
+			if (ps->wpnType > 0) {
+				{
+				Bullet *bullet = new Bullet(getRoom(), (getDir() + 2) % 4, ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
+				game->getObjects()->add (bullet);
+				bullet->setLocation (getx() + 8, gety());
+				}
+				{
+				Bullet *bullet = new Bullet(getRoom(), (getDir() + 3) % 4, ps->wpnRange, ps->wpnDamage, Bullet::BT_NORMAL, this);
+				game->getObjects()->add (bullet);
+				bullet->setLocation (getx() + 8, gety());
+				}
+			}
 		}
 	}
 	
@@ -242,11 +257,35 @@ void Player::handleCollission (ObjectBase *o)
 		MainLoop::getMainLoop()->playSample (samples[PICKUP_KEY]);
 		ps->keys++;
 	}
-	if (o->getType() == OT_MONSTER) // monster
+	else if (o->getType() == OT_HEALTH) {
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_OTHER]);
+		ps->hp = ps->hpMax;
+		game->messages->showMessage("Full Health", Messages::RIGHT_TO_LEFT);
+	}
+	else if (o->getType() == OT_BONUS1) {
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_OTHER]);
+		game->addTime(30000); // add 30 seconds
+	}
+	else if (o->getType() == OT_BONUS2) {
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_OTHER]);
+		ps->wpnRange += 40;
+		game->messages->showMessage("Increased weapon range", Messages::RIGHT_TO_LEFT);
+	}
+	else if (o->getType() == OT_BONUS3) {
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_OTHER]);
+		ps->wpnDamage += 2;
+		game->messages->showMessage("Increased weapon power", Messages::RIGHT_TO_LEFT);
+	}
+	else if (o->getType() == OT_BONUS4) {
+		MainLoop::getMainLoop()->playSample (samples[PICKUP_OTHER]);
+		ps->wpnType = 1;
+		game->messages->showMessage("Weapon upgrade", Messages::RIGHT_TO_LEFT);
+	}
+	else if (o->getType() == OT_MONSTER) // monster
 	{
 		if (hittimer == 0) hit(10); // TODO: damage determined by monster
 	}
-	if (o->getType() == OT_LOCKED_DOOR) {
+	else if (o->getType() == OT_LOCKED_DOOR) {
 		if (ps->keys > 0) {
 			Door *d = dynamic_cast<Door*>(o);			
 			d->setLocked(false);
@@ -255,7 +294,7 @@ void Player::handleCollission (ObjectBase *o)
 			// transportCounter = transportDelay; // avoid going through straight away
 		}
 	}	
-	if (o->getType() == OT_DOOR) // exit
+	else if (o->getType() == OT_DOOR) // exit
 	{		
 		if (transportCounter == 0)
 		{
@@ -270,7 +309,7 @@ void Player::handleCollission (ObjectBase *o)
 		}
 		transportCounter = transportDelay; // make sure we don't go back
 	}
-	if (o->getType() == OT_TELEPORT)
+	else if (o->getType() == OT_TELEPORT)
 	{
 		if (transportCounter == 0)
 		{
@@ -285,7 +324,7 @@ void Player::handleCollission (ObjectBase *o)
 		}
 		transportCounter = transportDelay; // make sure we don't go back		
 	}
-	if (o->getType() == OT_BULLET) // enemy bullet (only in bananas mode)
+	else if (o->getType() == OT_BULLET) // enemy bullet (only in bananas mode)
 	{		
 		
 	}

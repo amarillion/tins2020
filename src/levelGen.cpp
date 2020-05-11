@@ -34,11 +34,6 @@ bool hasKey(const T &aMap, const U &aKey) {
 	return aMap.find(aKey) != aMap.end();
 }
 
-template<typename T>
-T choice(const std::vector<T> &aContainer) {
-	return aContainer[random(aContainer.size())];
-}
-
 // essential missing functionality
 // see: https://stackoverflow.com/questions/6942273/how-to-get-a-random-element-from-a-c-container
 template<typename T>
@@ -70,6 +65,10 @@ bool Node::hasLock(Dir dir) {
 	return hasKey(locks, dir);
 }
 	
+std::string Node::toString() const {
+	return string_format("Node (%i, %i)", x, y);
+}
+
 string toString(const Map2D<Cell> &map) {
 	stringstream result;
 	
@@ -95,7 +94,7 @@ string toString(const Map2D<Cell> &map) {
 				row[0] << string_format("▒▒%s▒", northDoor);
 				row[1] << string_format ("▒%02i ", node.doorArea);
 				// row[1] << "▒   ";
-				row[2] << string_format("%s %c ", westDoor, pstartChar);
+				row[2] << string_format("%s %c%c", westDoor, pstartChar, node.hasBonus ? '*' : ' ');
 				row[3] << string_format("▒%c%c%c", 
 					node.hasBanana ? 'b' : ' ', 
 					node.hasKeycard ? 'k' : ' ', 
@@ -222,7 +221,7 @@ void roundRobinDistribute(const vector<Node*> &allNodes, int max, void set(Node*
 
 }
 
-void placeObjects(Map2D<Cell> &lvl, int maxBananas) {
+void placeObjects(Map2D<Cell> &lvl, int maxBananas, int maxBonus) {
 
 	multiset<int> doorAreaCounts;
 	// multimap<int, Node*> doorAreaNodes;
@@ -241,9 +240,11 @@ void placeObjects(Map2D<Cell> &lvl, int maxBananas) {
 		}
 	);
 
+#ifdef DEBUG
 	for(auto i : areasOrderedByFrq) {
 		std::cout << "Area #" << i << " count: " << doorAreaCounts.count(i) << endl;
 	}
+#endif
 
 	// put players in the largest area
 	auto largestAreaNodes = getDoorAreaNodes(lvl, areasOrderedByFrq[0]);
@@ -252,6 +253,14 @@ void placeObjects(Map2D<Cell> &lvl, int maxBananas) {
 	largestAreaNodes[1]->pStart = 2;
 
 	random_shuffle(allNodes.begin(), allNodes.end());
+	
+	// sort by degree. This means dead-ends are considered first
+	std::sort(allNodes.begin(), allNodes.end(), 
+		[&](const Node* a, const Node *b) {
+			return a->degree() < b->degree();
+		}
+	);
+
 	roundRobinDistribute(
 		allNodes,
 		maxBananas,
@@ -260,7 +269,22 @@ void placeObjects(Map2D<Cell> &lvl, int maxBananas) {
 		areasOrderedByFrq
 	);
 
+	roundRobinDistribute(
+		allNodes,
+		maxBonus,
+		[](Node* n) { n->hasBonus = true; },
+		[](Node* n) { return n->hasBanana || n->hasBonus; },
+		areasOrderedByFrq
+	);
+
 	random_shuffle(allNodes.begin(), allNodes.end());
+	// sort by degree. This means dead-ends are considered first
+	std::sort(allNodes.begin(), allNodes.end(), 
+		[&](const Node* a, const Node *b) {
+			return a->degree() < b->degree();
+		}
+	);
+	
 	int maxKeys = areasOrderedByFrq.size(); // put one key in each area
 	roundRobinDistribute(
 		allNodes,
@@ -269,7 +293,6 @@ void placeObjects(Map2D<Cell> &lvl, int maxBananas) {
 		[](Node* n) { return n->hasKeycard; },
 		areasOrderedByFrq
 	);
-
 
 }
 
@@ -395,6 +418,7 @@ Map2D<Cell> createKruskalMaze(int roomNum) {
 	int mapSize = sqrt(roomNum * 3);
 	int maxDoors = max(1, roomNum / 5);
 	int bananas = max(2, roomNum / 3);
+	int bonus = max(1, roomNum / 8);
 
 	auto level = Map2D<Cell>(mapSize, mapSize);
 	initCells(level);
@@ -404,9 +428,11 @@ Map2D<Cell> createKruskalMaze(int roomNum) {
 
 	kruskal(level, maxDoors);
 
-	placeObjects(level, bananas);
+	placeObjects(level, bananas, bonus);
 
+#ifdef DEBUG
 	cout << endl << toString(level) << endl;
+#endif
 
 	return level;
 }

@@ -16,6 +16,12 @@ static inline T bound (T _min, T val, T _max)
 /** generate a random number in the range [0, i) */
 int random (int i);
 
+// pick one  at random from a vector
+template<typename T>
+T choice(const std::vector<T> &aContainer) {
+	return aContainer[random(aContainer.size())];
+}
+
 int get_config_int(ALLEGRO_CONFIG *config, const char *section, const char *key, int defaultValue);
 void set_config_int(ALLEGRO_CONFIG *config, const char *section, const char *key, int value);
 std::string get_config_string(ALLEGRO_CONFIG *config, const char *section, const char *key, const char *defaultValue);

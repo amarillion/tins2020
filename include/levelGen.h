@@ -20,7 +20,15 @@ struct Node {
 
 	int pStart = 0;
 	bool hasBanana = false;
+	bool hasBonus = false;
 	bool hasKeycard = false;
+
+	int degree() const {
+		return links.size();
+	}
+
+	std::string toString() const;
+
 };
 
 class Cell {

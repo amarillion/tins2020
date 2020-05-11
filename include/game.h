@@ -20,7 +20,6 @@ private:
 	Settings *settings;
 	Level *level;
 	int monsterHp;
-	std::shared_ptr<Messages> messages;
 
 	static const int defaultGameTime = 180000; // 180 sec = 3 min
 	static const int defaultMonsterHp = 5;
@@ -43,6 +42,9 @@ private:
 public:
 	//TODO: make private
 	std::string gameover_message;
+	std::shared_ptr<Messages> messages;
+	
+	void addTime(int amount) { gameTimer += amount; messages->showMessage("Extra time", Messages::RIGHT_TO_LEFT); }
 
 	void doneLevel (); // clean up objects etc.
 	void initGame ();

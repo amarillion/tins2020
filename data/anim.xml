@@ -154,7 +154,16 @@
 	<anim id="health" rle='pickups' dx='16' dy='16' regionw='40' regionh='40' originx='0' originy='0'>
 		<frame time='0' hotx='-8' hoty='-8'/>
 	</anim>
-	<anim id="time" rle='pickups' dx='16' dy='16' regionw='40' regionh='40' originx='40' originy='0'>
+	<anim id="bonus1" rle='pickups' dx='16' dy='16' regionw='40' regionh='40' originx='160' originy='0'>
+		<frame time='0' hotx='-8' hoty='-8'/>
+	</anim>
+	<anim id="bonus2" rle='pickups' dx='16' dy='16' regionw='40' regionh='40' originx='200' originy='0'>
+		<frame time='0' hotx='-8' hoty='-8'/>
+	</anim>
+	<anim id="bonus3" rle='pickups' dx='16' dy='16' regionw='40' regionh='40' originx='240' originy='0'>
+		<frame time='0' hotx='-8' hoty='-8'/>
+	</anim>
+	<anim id="bonus4" rle='pickups' dx='16' dy='16' regionw='40' regionh='40' originx='280' originy='0'>
 		<frame time='0' hotx='-8' hoty='-8'/>
 	</anim>
 	<anim id="door" dx='32' dy='32'>
