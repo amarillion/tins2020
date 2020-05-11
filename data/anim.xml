@@ -76,7 +76,7 @@
 			<frame originx='0' time='100'>
 				<lit r='255' g='255' b='255'/>
 			</frame>
-			<frame originx='50' time='100'/>
+			<frame originx='60' time='100'/>
 		</state>
 	</anim>
 	<anim rle='BellOrange' id='monster2' dx='40' dy='40' regionw='60' regionh='60' hotx='-12' hoty='-18'>
@@ -88,7 +88,7 @@
 			<frame originx='0' time='100'>
 				<lit r='255' g='255' b='255'/>
 			</frame>
-			<frame originx='50' time='100'/>
+			<frame originx='60' time='100'/>
 		</state>
 	</anim>
 	<anim rle='BugBlue' id='monster3' dx='20' dy='20' regionw='30' regionh='30'>
