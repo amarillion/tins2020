@@ -698,6 +698,9 @@ void MainLoop::toggleWindowed()
 	initDisplay();
 
 	set_config_int (config, "twist", "windowed", screenMode);
+	
+	// convert back to video bitmaps
+	al_convert_memory_bitmaps();
 
 	UpdateSize();
 }
