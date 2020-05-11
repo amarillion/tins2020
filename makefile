@@ -12,7 +12,7 @@ CXX = g++
 LD = g++
 CFLAGS = -std=c++11 -Iinclude -I$(TWIST_HOME)/include -W -Wall -Wno-unused -DUSE_MOUSE -DUSE_CURL -DUSE_TEGEL
 LIBS = -lcurl -ltegel5
-NAME = tins2020
+NAME = flowpow
 
 # allow specifying location of tegel development library
 ifdef TEGEL_HOME

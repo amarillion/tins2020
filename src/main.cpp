@@ -13,9 +13,9 @@ int main(int argc, const char *const *argv)
 
 	mainloop
 		.setEngine(engine)
-		.setAppName("tins2020")
-		.setTitle("TINS 2020")
-		.setConfigFilename("tins2020.cfg")
+		.setAppName("flowpow")
+		.setTitle("Fole & Raul go Flower Power!")
+		.setConfigFilename("flowpow.cfg")
 		.setLogicIntervalMsec(20)
 		.setPreferredGameResolution(GAME_WIDTH, GAME_HEIGHT);
 		
