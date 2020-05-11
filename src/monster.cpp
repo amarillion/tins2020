@@ -10,17 +10,6 @@
 Anim *Monster::sprites[MONSTER_NUM];
 ALLEGRO_SAMPLE *Monster::samples[MONSTER_NUM];
 
-static void *l_alloc (void *ud, void *ptr, size_t osize,
-                                           size_t nsize) {
-  (void)ud;  (void)osize;  /* not used */
-  if (nsize == 0) {
-    free(ptr);
-    return NULL;
-  }
-  else
-    return realloc(ptr, nsize);
-}
-
 Monster::Monster(Room *r, int subType, int _hp) : Object (r, OT_MONSTER), monsterType (subType)
 {
 	setVisible(true);
@@ -30,8 +19,6 @@ Monster::Monster(Room *r, int subType, int _hp) : Object (r, OT_MONSTER), monste
 	setDir (rand() % 4);
 	hitCount = 0;
 	hp = _hp;
-
-//	state = lua_newstate(l_alloc, NULL);
 }
 
 void Monster::init(Resources *res)

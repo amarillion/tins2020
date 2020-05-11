@@ -3,6 +3,8 @@
 
 #include "motion.h"
 
+//TODO: DEPRECATED. replace with external updater like in Peppy.
+
 /**
 	continous motion, x and y axis 
 	follow a sine and cosine with independent periods.

@@ -5,6 +5,7 @@
 #include "object.h"
 #include "engine.h"
 #include "player.h"
+#include "messages.h"
 
 class Game : public State
 {
@@ -19,6 +20,7 @@ private:
 	Settings *settings;
 	Level *level;
 	int monsterHp;
+	std::shared_ptr<Messages> messages;
 
 	static const int defaultGameTime = 180000; // 180 sec = 3 min
 	static const int defaultMonsterHp = 5;

@@ -5,6 +5,9 @@
 #include <allegro5/allegro_font.h>
 #include "util.h"
 #include "mainloop.h"
+#include "strutil.h"
+
+using namespace std;
 
 Game::Game(Engine *engine, Settings *_settings) : objects(), parent(engine), settings(_settings)
 {
@@ -14,6 +17,9 @@ Game::Game(Engine *engine, Settings *_settings) : objects(), parent(engine), set
 	roomSet = NULL;
 
 	btnPause.setScancode(ALLEGRO_KEY_ESCAPE);
+
+	messages = make_shared<Messages>();
+	add(messages);
 }
 
 Game::~Game()
@@ -81,10 +87,28 @@ void Game::draw (const GraphicsContext &gc)
 	int sec = (gameTimer / 1000) % 60;
 	int csec = (gameTimer / 10) % 100;
 	al_draw_textf (gamefont, WHITE, 0, 464, ALLEGRO_ALIGN_LEFT, "%02i:%02i:%02i", min, sec, csec);
+
+	messages->draw(gc);
 }
 
 void Game::update()
 {
+	if (gameTimer % 1000 == 0) {
+		if (gameTimer == 60000) {
+				messages->showMessage("One minute remaining", Messages::RIGHT_TO_LEFT);
+		}
+
+		if (gameTimer == 30000) {
+				messages->showMessage("Hurry up!", Messages::RIGHT_TO_LEFT);
+		}
+
+		if (gameTimer >= 1000 && gameTimer <= 10000) {
+				messages->showMessage(string_format("%i", (gameTimer / 1000) - 1 ), Messages::RIGHT_TO_LEFT);
+		}
+	}
+
+	messages->update();
+
 	if (btnPause.justPressed())
 	{
 		pushMsg(Engine::MENU_PAUSE);
@@ -184,6 +208,7 @@ void Game::initLevel()
 
 	bananaCount = level->getBananaCount();
 
+	messages->showMessage(string_format("Collect %i Bananas", bananaCount), Messages::RIGHT_TO_LEFT);
 }
 
 void Game::doneLevel()
@@ -277,4 +302,5 @@ void Game::init (Resources *resources)
 {
 	roomSet = RoomSet::loadFromFile("data/rooms.xml", resources);
 	gamefont = resources->getFont("builtin_font");
+	messages->setFont(resources->getFont("SpicyRice-Regular_48"));
 }

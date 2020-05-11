@@ -393,8 +393,8 @@ void initCells(Map2D<Cell> &lvl) {
 Map2D<Cell> createKruskalMaze(int roomNum) {
 	
 	int mapSize = sqrt(roomNum * 3);
-	int maxDoors = roomNum / 5;
-	int bananas = roomNum / 3;
+	int maxDoors = max(1, roomNum / 5);
+	int bananas = max(2, roomNum / 3);
 
 	auto level = Map2D<Cell>(mapSize, mapSize);
 	initCells(level);

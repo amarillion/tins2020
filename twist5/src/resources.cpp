@@ -143,7 +143,7 @@ public:
 		else if (equalsIgnoreCase (extension, "ttf"))
 		{
 			// generate fonts with sizes 8, 16, 24, etc. to 48
-			for (int k = 8; k < 48; k += 8)
+			for (int k = 8; k <= 48; k += 8)
 			{
 				ALLEGRO_FONT *temp;
 				if (!(temp = al_load_font(i.c_str(), k, 0)))

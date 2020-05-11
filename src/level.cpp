@@ -310,7 +310,7 @@ int Level::getBananaCount()
 Level* createLevel(RoomSet *roomSet, Objects *objects, unsigned int numRooms, int monsterHp) {
 	// each node becomes a room
 
-	Map2D<Cell> grid = createKruskalMaze(10);
+	Map2D<Cell> grid = createKruskalMaze(numRooms);
 	auto nodes = getAllNodes(grid);
 
 	Level *level = new Level();

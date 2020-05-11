@@ -92,7 +92,10 @@ protected:
 			else {
 				stringstream ss(model->getSegmentText(i));
 				auto style = model->getSegmentStyle(i);
-				if (style->getFont() == nullptr) { return; }
+				if (style->getFont() == nullptr) { 
+					cerr << "WARN: Missing font" << endl;
+					return; 
+				}
 
 				// remember ascent for next iteration
 				ascent = al_get_font_ascent(style->getFont());
@@ -279,7 +282,7 @@ void TextImpl::draw(const GraphicsContext &gc)
 		xbase += motion->getdx(counter);
 		ybase += motion->getdy(counter);
 	}
-
+	
 	int lineRemain = (typewritingMode == LINE_BY_LINE) ? showlines : elems.size();
 	size_t typewriterRemain = typewriterPos;
 
@@ -318,6 +321,8 @@ void TextImpl::draw(const GraphicsContext &gc)
 		}
 	}
 
+	// TODO: enable on all components in debug mode?
+	// al_draw_rectangle(xbase, ybase, xbase + getw(), ybase + geth(), GREEN, 2.0);
 }
 
 void TextImpl::update() {
