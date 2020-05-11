@@ -7,7 +7,7 @@ SRC=.
 .PHONY: default
 default: all ;
 
-SPRITES=BellBlue BellOrange BugBlue BugGreen BugRed bullets Cover FlowerBlue FlowerPink FoleFront1 pickups teleport tiles2
+SPRITES=BellBlue BellOrange BugBlue BugGreen BugRed bullets Cover FlowerBlue FlowerPink FoleFront1 EnemyDeath pickups teleport tiles2
 SHEET_FILES=$(patsubst %,$(DEST)/%.png,$(SPRITES))
 	
 $(SHEET_FILES): $(DEST)/%.png: $(SRC)/%.aseprite

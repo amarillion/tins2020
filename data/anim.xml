@@ -1,39 +1,57 @@
 <twist>
-	<anim id='fole_walk' rle='FoleFront1' dx='20' dy='16' regionw='40' regionh='40' originy='40' >
-		<dir id="up">
-			<frame originx='160' time='200'  hotx='-8' hoty='-20'/>
-			<frame originx='200' time='200'  hotx='-8' hoty='-20'/>
-		</dir>
-		<dir id="down">
-			<frame originx='80' time='200'  hotx='-8' hoty='-20'/>
-			<frame originx='120' time='200'  hotx='-8' hoty='-20'/>
-		</dir>
-		<dir id="left">
-			<frame originx='0' time='200'  hotx='-8' hoty='-20'/>
-			<frame originx='40' time='200'  hotx='-8' hoty='-20'/>
-		</dir>
-		<dir id="right">
-			<frame originx='0' time='200' hotx='-8' hoty='-20'><flip/></frame>
-			<frame originx='40' time='200' hotx='-8' hoty='-20'><flip/></frame>
-		</dir>
+	<anim id='fole_walk' rle='FoleFront1' dx='20' dy='16' regionw='40' regionh='40' originy='0' >
+		<state>
+			<dir id="up">
+				<frame originx='600' time='200'  hotx='-8' hoty='-20'/>
+				<frame originx='640' time='200'  hotx='-8' hoty='-20'/>
+			</dir>
+			<dir id="down">
+				<frame originx='520' time='200'  hotx='-8' hoty='-20'/>
+				<frame originx='560' time='200'  hotx='-8' hoty='-20'/>
+			</dir>
+			<dir id="left">
+				<frame originx='440' time='200'  hotx='-8' hoty='-20'/>
+				<frame originx='480' time='200'  hotx='-8' hoty='-20'/>
+			</dir>
+			<dir id="right">
+				<frame originx='440' time='200' hotx='-8' hoty='-20'><flip/></frame>
+				<frame originx='480' time='200' hotx='-8' hoty='-20'><flip/></frame>
+			</dir>
+		</state>
+		<state>
+			<frame originx='680' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='720' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='760' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='800' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='840' time='200'  hotx='-8' hoty='-20'/>
+		</state>
 	</anim>
 	<anim id='raul_walk' rle='FoleFront1' dx='20' dy='16' regionw='40' regionh='40' originy='0' >
-		<dir id="up">
-			<frame originx='160' time='200'  hotx='-8' hoty='-20'/>
-			<frame originx='200' time='200'  hotx='-8' hoty='-20'/>
-		</dir>
-		<dir id="down">
-			<frame originx='80' time='200'  hotx='-8' hoty='-20'/>
-			<frame originx='120' time='200'  hotx='-8' hoty='-20'/>
-		</dir>
-		<dir id="left">
-			<frame originx='0' time='200'  hotx='-8' hoty='-20'/>
-			<frame originx='40' time='200'  hotx='-8' hoty='-20'/>
-		</dir>
-		<dir id="right">
-			<frame originx='0' time='200'  hotx='-8' hoty='-20'><flip/></frame>
-			<frame originx='40' time='200'  hotx='-8' hoty='-20'><flip/></frame>
-		</dir>
+		<state>
+			<dir id="up">
+				<frame originx='160' time='200'  hotx='-8' hoty='-20'/>
+				<frame originx='200' time='200'  hotx='-8' hoty='-20'/>
+			</dir>
+			<dir id="down">
+				<frame originx='80' time='200'  hotx='-8' hoty='-20'/>
+				<frame originx='120' time='200'  hotx='-8' hoty='-20'/>
+			</dir>
+			<dir id="left">
+				<frame originx='0' time='200'  hotx='-8' hoty='-20'/>
+				<frame originx='40' time='200'  hotx='-8' hoty='-20'/>
+			</dir>
+			<dir id="right">
+				<frame originx='0' time='200'  hotx='-8' hoty='-20'><flip/></frame>
+				<frame originx='40' time='200'  hotx='-8' hoty='-20'><flip/></frame>
+			</dir>
+		</state>
+		<state>
+			<frame originx='240' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='280' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='320' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='360' time='200'  hotx='-8' hoty='-20'/>
+			<frame originx='400' time='200'  hotx='-8' hoty='-20'/>
+		</state>
 	</anim>
 	<anim id='teleport' rle='teleport' dx='12' dy='30' regionw='32' regionh='32'>
 		<frame originx='0' time='200' hotx='-8' hoty='-10'/>
