@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Adapted from: https://blog.rubenwardy.com/2018/05/07/mingw-copy-dlls/
-
+# The linked script would check dlls one by one, recursively, but 
+# would fail in the case of a dependency loop
+# Here we check dlls and exe together, and only continue as long as new ones are added to the set
+#
 BINDIR="."
 EXE="$BINDIR/*.exe"
 PREFIX="x86_64-w64-mingw32"
